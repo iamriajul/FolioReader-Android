@@ -1,6 +1,7 @@
 package com.folioreader.ui.base;
 
 import android.os.AsyncTask;
+
 import com.folioreader.model.HighLight;
 import com.folioreader.model.sqlite.HighLightTable;
 
@@ -24,6 +25,7 @@ public class SaveReceivedHighlightTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
+        if (highLights == null) return null;
         for (HighLight highLight : highLights) {
             HighLightTable.saveHighlightIfNotExists(highLight);
         }
