@@ -62,7 +62,8 @@ class AppUtil {
         fun charsetNameForURLConnection(connection: URLConnection): String {
             // see https://stackoverflow.com/a/3934280/1027646
             val contentType = connection.contentType
-            val values = contentType.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val values =
+                contentType.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             var charset: String? = null
 
             for (_value in values) {
@@ -97,12 +98,35 @@ class AppUtil {
                 obj.put(Config.CONFIG_IS_TTS, config.isShowTts)
                 obj.put(Config.CONFIG_ALLOWED_DIRECTION, config.allowedDirection.toString())
                 obj.put(Config.CONFIG_DIRECTION, config.direction.toString())
+                obj.put(Config.CONFIG_ENABLE_AUTO_SCROLL, config.isAutoScroll)
+                obj.put(Config.CONFIG_INTERVAL_AUTO_SCROLL, config.intervalAutoScroll)
+                obj.put(Config.CONFIG_CONTINUOUS_AUTO_SCROLL, config.isContinuousAutoScroll)
+                obj.put(
+                    Config.CONFIG_INTERVAL_CONTINUOUS_AUTO_SCROLL,
+                    config.intervalContinuousAutoScroll
+                )
+                obj.put(Config.CONFIG_WHOLE_PAGE_AT_A_TIME_SCROLL, config.isWholePageAtATime)
+                obj.put(
+                    Config.CONFIG_USE_VOLUME_TO_CONTROL_NAVIGATION,
+                    config.isUseVolumeForControlNavigation
+                )
+                obj.put(
+                    Config.CONFIG_SWIPE_TO_CONTROL_BRIGHTNESS,
+                    config.isSwipeForControlBrightness
+                )
+                obj.put(Config.CONFIG_DIM_ON_INACTIVE, config.isDimOnInactive)
+                obj.put(Config.CONFIG_DIM_ON_INACTIVE_TIME, config.dimOnInactiveTime)
+                obj.put(Config.CONFIG_SHAKE_TO_TAKE_SCREEN_SHORT, config.isShakeToTakeScreenShort)
+                obj.put(Config.CONFIG_JUSTIFIED_ALIGNMENT, config.isJustifiedAlignment)
+                obj.put(Config.CONFIG_LINE_HEIGHT, config.lineHeight)
+                obj.put(Config.CONFIG_HYPHENATION, config.isHyphenation)
+
                 SharedPreferenceUtil.putSharedPreferencesString(
                     context, Config.INTENT_CONFIG,
                     obj.toString()
                 )
             } catch (e: JSONException) {
-                Log.e(LOG_TAG, e.message?:"")
+                Log.e(LOG_TAG, e.message ?: "")
             }
 
         }
@@ -115,7 +139,7 @@ class AppUtil {
                     val jsonObject = JSONObject(json)
                     return Config(jsonObject)
                 } catch (e: JSONException) {
-                    Log.e(LOG_TAG, e.message?:"")
+                    Log.e(LOG_TAG, e.message ?: "")
                     return null
                 }
 
@@ -143,7 +167,8 @@ class AppUtil {
                 }
             }
 
-            val index = action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+            val index =
+                action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
             when (action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_POINTER_DOWN -> return "ACTION_POINTER_DOWN($index)"
                 MotionEvent.ACTION_POINTER_UP -> return "ACTION_POINTER_UP($index)"
