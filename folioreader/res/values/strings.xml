@@ -134,5 +134,7 @@
     <string name="enable_shake_to_ss">Enable Shake to take Screenshot</string>
     <string name="adjust_line_height">Adjust Line Height</string>
     <string name="enable_hyphenation">"Enable Hyphenation "</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="note">Note</string>
 
 </resources>

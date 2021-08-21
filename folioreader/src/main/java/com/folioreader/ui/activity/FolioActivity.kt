@@ -66,6 +66,7 @@ import com.folioreader.ui.adapter.TOCAdapter.TOCCallback
 import com.folioreader.ui.fragment.FolioPageFragment
 import com.folioreader.ui.fragment.MediaControllerFragment
 import com.folioreader.ui.fragment.TableOfContentFragment
+import com.folioreader.ui.fragment.bookmark.BookmarkHighlightAndNoteFragment
 import com.folioreader.ui.view.ConfigBottomSheetDialogFragment
 import com.folioreader.ui.view.DirectionalViewpager
 import com.folioreader.ui.view.FolioAppBarLayout
@@ -89,7 +90,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private var bookFileName: String? = null
 
     private lateinit var binding: FolioActivityBinding
-    private var distractionFreeMode: Boolean = false
+
+    //    private var distractionFreeMode: Boolean = false
+    private var hasFullScreen: Boolean = false
     private var handler: Handler? = null
 
     private var currentChapterIndex: Int = 0
@@ -354,6 +357,17 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding.ivChapters.setOnClickListener {
             openStartDrawer()
         }
+
+        binding.ivBookmark.setOnClickListener {
+            showBookmarkHighlightAndNote()
+        }
+
+        binding.ivFullScreen.setOnClickListener {
+            hasFullScreen = !hasFullScreen
+            fullScreenMode()
+        }
+
+
     }
 
     private fun setupRecyclerViews() {
@@ -369,7 +383,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private fun initAdapter() {
         val publication = pubBox?.publication
         if (publication != null) {
-            if (!publication.tableOfContents.isEmpty()) {
+            if (publication.tableOfContents.isNotEmpty()) {
                 val tocLinkWrappers = ArrayList<TOCLinkWrapper>()
                 for (tocLink in publication.tableOfContents) {
                     val tocLinkWrapper = createTocLinkWrapper(tocLink, 0)
@@ -561,6 +575,13 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         )
     }
 
+    private fun showBookmarkHighlightAndNote() {
+        BookmarkHighlightAndNoteFragment().show(
+            supportFragmentManager,
+            BookmarkHighlightAndNoteFragment.TAG
+        )
+    }
+
     fun showMediaController() {
         mediaControllerFragment!!.show(supportFragmentManager)
     }
@@ -712,20 +733,20 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         window.decorView.setOnSystemUiVisibilityChangeListener(this)
 
         // Deliberately Hidden and shown to make activity contents lay out behind SystemUI
-        hideSystemUI()
-        showSystemUI()
+//        hideSystemUI()
+//        showSystemUI()
 
-        distractionFreeMode =
-            savedInstanceState != null && savedInstanceState.getBoolean(BUNDLE_DISTRACTION_FREE_MODE)
+//        distractionFreeMode =
+//            savedInstanceState != null && savedInstanceState.getBoolean(BUNDLE_DISTRACTION_FREE_MODE)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         Log.v(LOG_TAG, "-> onPostCreate")
 
-        if (distractionFreeMode) {
-            handler!!.post { hideSystemUI() }
-        }
+//        if (distractionFreeMode) {
+//            handler!!.post { hideSystemUI() }
+//        }
     }
 
     /**
@@ -734,7 +755,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun getTopDistraction(unit: DisplayUnit): Int {
 
         var topDistraction = 0
-        if (!distractionFreeMode) {
+        if (hasFullScreen /*!distractionFreeMode*/) {
             topDistraction = statusBarHeight
             if (actionBar != null)
                 topDistraction += actionBar!!.height
@@ -762,7 +783,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun getBottomDistraction(unit: DisplayUnit): Int {
 
         var bottomDistraction = 0
-        if (!distractionFreeMode)
+        if (hasFullScreen /*!distractionFreeMode*/)
             bottomDistraction = binding.appBarLayout.navigationBarHeight
 
         when (unit) {
@@ -788,10 +809,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         //Log.v(LOG_TAG, "-> computeViewportRect");
 
         val viewportRect = Rect(binding.appBarLayout.insets)
-        if (distractionFreeMode)
+        if (!hasFullScreen/*distractionFreeMode*/)
             viewportRect.left = 0
         viewportRect.top = getTopDistraction(DisplayUnit.PX)
-        if (distractionFreeMode) {
+        if (!hasFullScreen/*distractionFreeMode*/) {
             viewportRect.right = displayMetrics!!.widthPixels
         } else {
             viewportRect.right = displayMetrics!!.widthPixels - viewportRect.right
@@ -834,26 +855,40 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun onSystemUiVisibilityChange(visibility: Int) {
         Log.v(LOG_TAG, "-> onSystemUiVisibilityChange -> visibility = $visibility")
 
-        distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
-        Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
-
-        if (actionBar != null) {
-            if (distractionFreeMode) {
-                actionBar!!.hide()
-            } else {
-                actionBar!!.show()
-            }
-        }
+//        distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
+//        Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
+//
+//        if (actionBar != null) {
+//            if (distractionFreeMode) {
+//                actionBar!!.hide()
+//            } else {
+//                actionBar!!.show()
+//            }
+//        }
     }
 
     override fun toggleSystemUI() {
 
-        if (distractionFreeMode) {
-            showSystemUI()
+//        hasFullScreen = distractionFreeMode
+//        if (distractionFreeMode) {
+//            showSystemUI()
+//        } else {
+//            hideSystemUI()
+//        }
+        binding.appBarLayout.visibility = View.VISIBLE
+        binding.llPages.visibility = View.VISIBLE
+    }
+
+    private fun fullScreenMode() {
+        if (hasFullScreen) {
+            binding.appBarLayout.visibility = View.GONE
+            binding.llPages.visibility = View.GONE
         } else {
-            hideSystemUI()
+            binding.appBarLayout.visibility = View.VISIBLE
+            binding.llPages.visibility = View.VISIBLE
         }
     }
+
 
     private fun showSystemUI() {
         Log.v(LOG_TAG, "-> showSystemUI")
@@ -1104,7 +1139,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         Log.v(LOG_TAG, "-> onSaveInstanceState")
         this.outState = outState
 
-        outState.putBoolean(BUNDLE_DISTRACTION_FREE_MODE, distractionFreeMode)
+//        outState.putBoolean(BUNDLE_DISTRACTION_FREE_MODE, distractionFreeMode)
         outState.putBundle(SearchAdapter.DATA_BUNDLE, searchAdapterDataBundle)
         outState.putCharSequence(SearchActivity.BUNDLE_SAVE_SEARCH_QUERY, searchQuery)
     }
