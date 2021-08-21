@@ -45,6 +45,8 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.folioreader.Config
 import com.folioreader.Constants
 import com.folioreader.Constants.*
@@ -53,13 +55,17 @@ import com.folioreader.R
 import com.folioreader.databinding.FolioActivityBinding
 import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighlightImpl
+import com.folioreader.model.TOCLinkWrapper
 import com.folioreader.model.event.MediaOverlayPlayPauseEvent
 import com.folioreader.model.locators.ReadLocator
 import com.folioreader.model.locators.SearchLocator
 import com.folioreader.ui.adapter.FolioPageFragmentAdapter
 import com.folioreader.ui.adapter.SearchAdapter
+import com.folioreader.ui.adapter.TOCAdapter
+import com.folioreader.ui.adapter.TOCAdapter.TOCCallback
 import com.folioreader.ui.fragment.FolioPageFragment
 import com.folioreader.ui.fragment.MediaControllerFragment
+import com.folioreader.ui.fragment.TableOfContentFragment
 import com.folioreader.ui.view.ConfigBottomSheetDialogFragment
 import com.folioreader.ui.view.DirectionalViewpager
 import com.folioreader.ui.view.FolioAppBarLayout
@@ -75,9 +81,10 @@ import org.readium.r2.streamer.parser.EpubParser
 import org.readium.r2.streamer.parser.PubBox
 import org.readium.r2.streamer.server.Server
 import java.lang.ref.WeakReference
+import java.util.ArrayList
 
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
-    View.OnSystemUiVisibilityChangeListener {
+    View.OnSystemUiVisibilityChangeListener, TOCCallback {
 
     private var bookFileName: String? = null
 
@@ -115,6 +122,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private var topActivity: Boolean? = null
     private var taskImportance: Int = 0
 
+    private lateinit var mTOCAdapter: TOCAdapter
+
+
     companion object {
 
         @JvmField
@@ -128,6 +138,42 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         const val EXTRA_SEARCH_ITEM = "EXTRA_SEARCH_ITEM"
         const val ACTION_SEARCH_CLEAR = "ACTION_SEARCH_CLEAR"
         private const val HIGHLIGHT_ITEM = "highlight_item"
+
+
+        /**
+         * [RECURSIVE]
+         *
+         *
+         * function generates list of [TOCLinkWrapper] of TOC list from publication manifest
+         *
+         * @param tocLink     table of content elements
+         * @param indentation level of hierarchy of the child elements
+         * @return generated [TOCLinkWrapper] list
+         */
+        private fun createTocLinkWrapper(tocLink: Link, indentation: Int): TOCLinkWrapper {
+            val tocLinkWrapper = TOCLinkWrapper(tocLink, indentation)
+            for (tocLink1 in tocLink.children) {
+                val tocLinkWrapper1 = createTocLinkWrapper(tocLink1, indentation + 1)
+                if (tocLinkWrapper1.indentation != 3) {
+                    tocLinkWrapper.addChild(tocLinkWrapper1)
+                }
+            }
+            return tocLinkWrapper
+        }
+
+
+        private fun createTOCFromSpine(spine: List<Link>): ArrayList<TOCLinkWrapper>? {
+            val tocLinkWrappers = ArrayList<TOCLinkWrapper>()
+            for (link in spine) {
+                val tocLink = Link()
+                tocLink.title = link.title
+                tocLink.href = link.href
+                tocLinkWrappers.add(TOCLinkWrapper(tocLink, 0))
+            }
+            return tocLinkWrappers
+        }
+
+
     }
 
     private val closeBroadcastReceiver = object : BroadcastReceiver() {
@@ -265,6 +311,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding = DataBindingUtil.setContentView(this, R.layout.folio_activity)
         this.savedInstanceState = savedInstanceState
 
+        Log.d(LOG_TAG, "onCreate: ${binding.llPages.height}")
+
         if (savedInstanceState != null) {
             searchAdapterDataBundle = savedInstanceState.getBundle(SearchAdapter.DATA_BUNDLE)
             searchQuery =
@@ -298,17 +346,69 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         } else {
             setupBook()
         }
+        setupRecyclerViews()
+        setupListeners()
     }
 
+    private fun setupListeners() {
+        binding.ivChapters.setOnClickListener {
+            openStartDrawer()
+        }
+    }
+
+    private fun setupRecyclerViews() {
+        binding.chaptersRecyclerView.setHasFixedSize(true)
+        binding.chaptersRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+    }
+
+    private fun initAdapter() {
+        val publication = pubBox?.publication
+        if (publication != null) {
+            if (!publication.tableOfContents.isEmpty()) {
+                val tocLinkWrappers = ArrayList<TOCLinkWrapper>()
+                for (tocLink in publication.tableOfContents) {
+                    val tocLinkWrapper = createTocLinkWrapper(tocLink, 0)
+                    tocLinkWrappers.add(tocLinkWrapper)
+                }
+                onLoadTOC(tocLinkWrappers)
+            } else {
+                onLoadTOC(createTOCFromSpine(publication.readingOrder) ?: ArrayList())
+            }
+        } else {
+            onError()
+        }
+    }
+
+
+    private fun onLoadTOC(tocLinkWrapperList: ArrayList<TOCLinkWrapper>) {
+        mTOCAdapter = TOCAdapter(
+            this, tocLinkWrapperList,
+            spine!![currentChapterIndex].href, config
+        )
+        mTOCAdapter.setCallback(this)
+        binding.chaptersRecyclerView.adapter = mTOCAdapter
+    }
+
+    private fun onError() {
+        binding.chaptersRecyclerView.visibility = View.GONE
+    }
+
+
+    private lateinit var config: Config
     private fun initActionBar() {
 
         setSupportActionBar(binding.toolbar)
 
-        val config = AppUtil.getSavedConfig(applicationContext)!!
+        config = AppUtil.getSavedConfig(applicationContext)!!
 
-        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
-        UiUtil.setColorIntToDrawable(config.themeColor, drawable!!)
-        binding.toolbar.navigationIcon = drawable
+//        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
+//        UiUtil.setColorIntToDrawable(config.themeColor, drawable!!)
+//        binding.toolbar.navigationIcon = drawable
 
         if (config.isNightMode) {
             setNightMode()
@@ -428,6 +528,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             binding.mainDrawer.closeDrawer(GravityCompat.START)
         } else {
             binding.mainDrawer.openDrawer(GravityCompat.START)
+            initAdapter()
         }
     }
 
@@ -1103,6 +1204,19 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 val bundle = FolioPageFragmentAdapter.getBundleFromSavedState(savedState)
                 bundle?.putParcelable(FolioPageFragment.BUNDLE_SEARCH_LOCATOR, null)
             }
+        }
+    }
+
+    override fun onTocClicked(position: Int) {
+        val tocLinkWrapper = mTOCAdapter.getItemAt(position) as TOCLinkWrapper
+        goToChapter(tocLinkWrapper.tocLink.href ?: "")
+        openStartDrawer()
+    }
+
+    override fun onExpanded(position: Int) {
+        val tocLinkWrapper = mTOCAdapter.getItemAt(position) as TOCLinkWrapper
+        if (tocLinkWrapper.children != null && tocLinkWrapper.children.size > 0) {
+            mTOCAdapter.toggleGroup(position)
         }
     }
 }
