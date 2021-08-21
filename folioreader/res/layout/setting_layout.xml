@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:padding="16dp">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_settings_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/settings"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/close_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/lbl_settings_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/lbl_settings_text_view"
+                app:srcCompat="@drawable/ic_close_black_24dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_enable_auto_scroll_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/enable_auto_scroll"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/auto_scroll_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/auto_scroll_switch"
+                tools:text="@string/enable_auto_scroll" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/auto_scroll_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintBottom_toTopOf="@id/lbl_auto_scroll_interval_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_settings_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_auto_scroll_interval_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:text="@string/auto_scroll_interval"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/auto_scroll_switch"
+                tools:text="@string/auto_scroll_interval" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/auto_scroll_interval_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:padding="8dp"
+                android:text="15s"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_auto_scroll_interval_text_view"
+                tools:text="15s" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/reduce_auto_scroll_interval_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/auto_scroll_interval_text_view"
+                app:layout_constraintStart_toEndOf="@id/auto_scroll_interval_text_view"
+                app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view"
+                app:srcCompat="@drawable/ic_round_minus" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/auto_scroll_interval_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:value="15"
+                android:valueFrom="1"
+                android:valueTo="30"
+                app:layout_constraintBottom_toBottomOf="@id/auto_scroll_interval_text_view"
+                app:layout_constraintEnd_toStartOf="@id/increase_auto_scroll_interval_image_view"
+                app:layout_constraintStart_toEndOf="@id/reduce_auto_scroll_interval_image_view"
+                app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/increase_auto_scroll_interval_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/auto_scroll_interval_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/auto_scroll_interval_slider"
+                app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view"
+                app:srcCompat="@drawable/ic_round_plus" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_enable_continuous_auto_scroll_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/enable_continuous_auto_scroll"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/continuous_auto_scroll_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/continuous_auto_scroll_switch"
+                tools:text="@string/enable_continuous_auto_scroll" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/continuous_auto_scroll_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/auto_scroll_interval_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/contiguous_auto_scroll_interval_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:text="15%"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/continuous_auto_scroll_switch"
+                tools:text="15s" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/reduce_contiguous_auto_scroll_interval_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:layout_constraintStart_toEndOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:srcCompat="@drawable/ic_round_minus" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/contiguous_auto_scroll_interval_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:value="15"
+                android:valueFrom="1"
+                android:valueTo="30"
+                app:layout_constraintBottom_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:layout_constraintEnd_toStartOf="@id/increase_contiguous_auto_scroll_interval_image_view"
+                app:layout_constraintStart_toEndOf="@id/reduce_contiguous_auto_scroll_interval_image_view"
+                app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/increase_contiguous_auto_scroll_interval_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/contiguous_auto_scroll_interval_slider"
+                app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:srcCompat="@drawable/ic_round_plus" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_whole_page_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/whole_page_at_a_time"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/whole_page_switch"
+                app:layout_constraintEnd_toStartOf="@id/whole_page_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/whole_page_switch"
+                tools:text="@string/whole_page_at_a_time" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/whole_page_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_volume_to_control_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/use_volume_to_control_navigation"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/volume_to_control_switch"
+                app:layout_constraintEnd_toStartOf="@id/volume_to_control_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/volume_to_control_switch"
+                tools:text="@string/use_volume_to_control_navigation" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/volume_to_control_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/whole_page_switch"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_swipe_brightness_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/use_swipe_to_control_brightness"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/swipe_brightness_switch"
+                app:layout_constraintEnd_toStartOf="@id/swipe_brightness_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/swipe_brightness_switch"
+                tools:text="@string/use_swipe_to_control_brightness" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swipe_brightness_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/volume_to_control_switch"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_blue_light_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:text="@string/blue_light_filter"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/swipe_brightness_switch"
+                tools:text="@string/blue_light_filter" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/blue_light_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:padding="8dp"
+                android:text="15%"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_blue_light_text_view"
+                tools:text="15s" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/reduce_blue_light_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/blue_light_text_view"
+                app:layout_constraintStart_toEndOf="@id/blue_light_text_view"
+                app:layout_constraintTop_toTopOf="@id/blue_light_text_view"
+                app:srcCompat="@drawable/ic_round_minus" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/blue_light_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:value="15"
+                android:valueFrom="1"
+                android:valueTo="30"
+                app:layout_constraintBottom_toBottomOf="@id/blue_light_text_view"
+                app:layout_constraintEnd_toStartOf="@id/increase_blue_light_image_view"
+                app:layout_constraintStart_toEndOf="@id/reduce_blue_light_image_view"
+                app:layout_constraintTop_toTopOf="@id/blue_light_text_view" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/increase_blue_light_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/blue_light_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/blue_light_slider"
+                app:layout_constraintTop_toTopOf="@id/blue_light_text_view"
+                app:srcCompat="@drawable/ic_round_plus" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_inactive_dim_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/dim_after_inactive"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/inactive_dim_switch"
+                app:layout_constraintEnd_toStartOf="@id/inactive_dim_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/inactive_dim_switch"
+                tools:text="@string/dim_after_inactive" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/inactive_dim_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blue_light_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <RadioGroup
+                android:id="@+id/inactive_dim_times_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/inactive_dim_switch">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_5_minutes"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_10_minutes"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_15_minutes"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+            </RadioGroup>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_shake_ss_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/enable_shake_to_ss"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/shake_ss_switch"
+                app:layout_constraintEnd_toStartOf="@id/shake_ss_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/shake_ss_switch"
+                tools:text="@string/enable_shake_to_ss" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/shake_ss_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/inactive_dim_times_radio_group"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_alignment_justify_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/enable_justified_alignment"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/alignment_justify_switch"
+                app:layout_constraintEnd_toStartOf="@id/alignment_justify_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/alignment_justify_switch"
+                tools:text="@string/enable_justified_alignment" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/alignment_justify_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_shake_ss_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_line_height_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:text="@string/adjust_line_height"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/alignment_justify_switch"
+                tools:text="@string/adjust_line_height" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/line_height_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:padding="8dp"
+                android:text="15%"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_line_height_text_view"
+                tools:text="15s" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/reduce_line_height_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/line_height_text_view"
+                app:layout_constraintStart_toEndOf="@id/line_height_text_view"
+                app:layout_constraintTop_toTopOf="@id/line_height_text_view"
+                app:srcCompat="@drawable/ic_round_minus" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/line_height_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:value="15"
+                android:valueFrom="1"
+                android:valueTo="30"
+                app:layout_constraintBottom_toBottomOf="@id/line_height_text_view"
+                app:layout_constraintEnd_toStartOf="@id/increase_line_height_image_view"
+                app:layout_constraintStart_toEndOf="@id/reduce_line_height_image_view"
+                app:layout_constraintTop_toTopOf="@id/line_height_text_view" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/increase_line_height_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="@id/line_height_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/line_height_slider"
+                app:layout_constraintTop_toTopOf="@id/line_height_text_view"
+                app:srcCompat="@drawable/ic_round_plus" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/lbl_hyphenation_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/enable_hyphenation"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/hyphenation_switch"
+                app:layout_constraintEnd_toStartOf="@id/hyphenation_switch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/hyphenation_switch"
+                tools:text="@string/enable_hyphenation" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/hyphenation_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_off_white_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/line_height_text_view"
+                app:thumbTint="@color/switch_thumb_tint_color"
+                app:trackTint="@color/off_white" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</layout>

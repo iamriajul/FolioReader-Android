@@ -25,6 +25,7 @@ import androidx.core.view.GestureDetectorCompat
 import com.folioreader.Config
 import com.folioreader.Constants
 import com.folioreader.R
+import com.folioreader.databinding.TextSelectionBinding
 import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighLight
 import com.folioreader.model.HighlightImpl.HighlightStyle
@@ -37,7 +38,6 @@ import com.folioreader.util.AppUtil
 import com.folioreader.util.HighlightUtil
 import com.folioreader.util.UiUtil
 import dalvik.system.PathClassLoader
-import kotlinx.android.synthetic.main.text_selection.view.*
 import org.json.JSONObject
 import org.springframework.util.ReflectionUtils
 import java.lang.ref.WeakReference
@@ -97,7 +97,7 @@ class FolioWebView : WebView {
     private var selectionRect = Rect()
     private val popupRect = Rect()
     private var popupWindow = PopupWindow()
-    private lateinit var viewTextSelection: View
+    private lateinit var viewTextSelection: TextSelectionBinding
     private var isScrollingCheckDuration: Int = 0
     private var isScrollingRunnable: Runnable? = null
     private var oldScrollX: Int = 0
@@ -287,8 +287,8 @@ class FolioWebView : WebView {
             ContextThemeWrapper(context, R.style.FolioDayTheme)
         }
 
-        viewTextSelection = LayoutInflater.from(ctw).inflate(R.layout.text_selection, null)
-        viewTextSelection.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        viewTextSelection = TextSelectionBinding.inflate(LayoutInflater.from(ctw), null)
+        viewTextSelection.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
         viewTextSelection.yellowHighlight.setOnClickListener {
             Log.v(LOG_TAG, "-> onClick -> yellowHighlight")
@@ -364,7 +364,7 @@ class FolioWebView : WebView {
         bundle.putString(Constants.SELECTED_WORD, selectedText?.trim())
         dictionaryFragment.arguments = bundle
         dictionaryFragment.show(
-            parentFragment.fragmentManager!!,
+            parentFragment.requireFragmentManager(),
             DictionaryFragment::class.java.name
         )
     }
@@ -754,8 +754,8 @@ class FolioWebView : WebView {
         //popupRect initialisation for belowSelectionRect
         popupRect.left = viewportRect.left
         popupRect.top = belowSelectionRect.top
-        popupRect.right = popupRect.left + viewTextSelection.measuredWidth
-        popupRect.bottom = popupRect.top + viewTextSelection.measuredHeight
+        popupRect.right = popupRect.left + viewTextSelection.root.measuredWidth
+        popupRect.bottom = popupRect.top + viewTextSelection.root.measuredHeight
         //Log.d(LOG_TAG, "-> Pre decision popupRect -> " + popupRect);
 
         val popupY: Int
@@ -767,7 +767,7 @@ class FolioWebView : WebView {
 
             // popupRect initialisation for aboveSelectionRect
             popupRect.top = aboveSelectionRect.top
-            popupRect.bottom = popupRect.top + viewTextSelection.measuredHeight
+            popupRect.bottom = popupRect.top + viewTextSelection.root.measuredHeight
 
             if (aboveSelectionRect.contains(popupRect)) {
                 Log.i(LOG_TAG, "-> show above")
@@ -776,12 +776,13 @@ class FolioWebView : WebView {
             } else {
 
                 Log.i(LOG_TAG, "-> show in middle")
-                val popupYDiff = (viewTextSelection.measuredHeight - selectionRect.height()) / 2
+                val popupYDiff =
+                    (viewTextSelection.root.measuredHeight - selectionRect.height()) / 2
                 popupY = selectionRect.top - popupYDiff
             }
         }
 
-        val popupXDiff = (viewTextSelection.measuredWidth - selectionRect.width()) / 2
+        val popupXDiff = (viewTextSelection.root.measuredWidth - selectionRect.width()) / 2
         val popupX = selectionRect.left - popupXDiff
 
         popupRect.offsetTo(popupX, popupY)
@@ -821,7 +822,7 @@ class FolioWebView : WebView {
             if (oldScrollX == currentScrollX && oldScrollY == currentScrollY && !inTouchMode) {
                 Log.i(LOG_TAG, "-> Stopped scrolling, show Popup")
                 popupWindow.dismiss()
-                popupWindow = PopupWindow(viewTextSelection, WRAP_CONTENT, WRAP_CONTENT)
+                popupWindow = PopupWindow(viewTextSelection.root, WRAP_CONTENT, WRAP_CONTENT)
                 popupWindow.isClippingEnabled = false
                 popupWindow.showAtLocation(
                     this@FolioWebView, Gravity.NO_GRAVITY,

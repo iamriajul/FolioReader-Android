@@ -17,42 +17,42 @@ public class SharedPreferenceUtil {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putInt(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     public static void putSharedPreferencesBoolean(Context context, String key, boolean val) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean(key, val);
-        edit.commit();
+        edit.apply();
     }
 
     public static void putSharedPreferencesString(Context context, String key, String val) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putString(key, val);
-        edit.commit();
+        edit.apply();
     }
 
     public static void putSharedPreferencesStringSet(Context context, String key, Set<String> val) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putStringSet(key, val);
-        editor.commit();
+        editor.apply();
     }
 
     public static void putSharedPreferencesFloat(Context context, String key, float val) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putFloat(key, val);
-        edit.commit();
+        edit.apply();
     }
 
     public static void putSharedPreferencesLong(Context context, String key, long val) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putLong(key, val);
-        edit.commit();
+        edit.apply();
     }
 
     public static long getSharedPreferencesLong(Context context, String key, long defaultValue) {

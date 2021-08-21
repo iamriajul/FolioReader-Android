@@ -117,5 +117,22 @@
     <string name="callClearSelection" translatable="false">javascript:clearSelection()</string>
     <string name="pages_format">Pages %1$d of %2$d</string>
     <string name="chapter_name_format">(%1$s)</string>
+    <string name="settings">Settings</string>
+    <string name="chapter">Chapters</string>
+    <string name="enable_auto_scroll">Enable Auto Scroll</string>
+    <string name="auto_scroll_interval">Set Auto Scroll Interval</string>
+    <string name="enable_continuous_auto_scroll">Enable Continuous Auto Scoll</string>
+    <string name="whole_page_at_a_time">View whole page at a time</string>
+    <string name="use_volume_to_control_navigation">Use Volume Button for Page Navigation</string>
+    <string name="use_swipe_to_control_brightness">Swipe Left margin of the screen for adjusting Brightness of Reading Space</string>
+    <string name="blue_light_filter">Blue Light Filter</string>
+    <string name="dim_after_inactive">Dim Screen after inactive</string>
+    <string name="_5_minutes">5 minutes</string>
+    <string name="_10_minutes">10 minutes</string>
+    <string name="_15_minutes">15 minutes</string>
+    <string name="enable_justified_alignment">Enable Justified Alignment</string>
+    <string name="enable_shake_to_ss">Enable Shake to take Screenshot</string>
+    <string name="adjust_line_height">Adjust Line Height</string>
+    <string name="enable_hyphenation">"Enable Hyphenation "</string>
 
 </resources>

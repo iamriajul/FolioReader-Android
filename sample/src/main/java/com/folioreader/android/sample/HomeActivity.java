@@ -19,8 +19,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.folioreader.Config;
@@ -56,18 +58,11 @@ public class HomeActivity extends AppCompatActivity
                 .setOnClosedListener(this);
 
         getHighlightsAndSave();
-
+        openRawFile();
         findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Config config = AppUtil.getSavedConfig(getApplicationContext());
-                if (config == null)
-                    config = new Config();
-                config.setAllowedDirection(Config.AllowedDirection.VERTICAL_AND_HORIZONTAL);
-
-                folioReader.setConfig(config, true)
-                        .openBook(R.raw.accessible_epub_3);
+                openRawFile();
             }
         });
 
@@ -87,6 +82,16 @@ public class HomeActivity extends AppCompatActivity
                         .openBook("file:///android_asset/TheSilverChair.epub");
             }
         });
+    }
+
+    private void openRawFile() {
+        Config config = AppUtil.getSavedConfig(getApplicationContext());
+        if (config == null)
+            config = new Config();
+        config.setAllowedDirection(Config.AllowedDirection.VERTICAL_AND_HORIZONTAL);
+
+        folioReader.setConfig(config, true)
+                .openBook(R.raw.accessible_epub_3);
     }
 
     private ReadLocator getLastReadLocator() {
