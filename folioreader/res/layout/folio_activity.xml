@@ -87,7 +87,9 @@
             android:layout_height="match_parent"
             android:layout_gravity="end">
 
-            <include layout="@layout/setting_layout" />
+            <include
+                android:id="@+id/setting_layout"
+                layout="@layout/setting_layout" />
         </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

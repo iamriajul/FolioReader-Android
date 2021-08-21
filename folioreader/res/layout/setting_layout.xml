@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="config"
+            type="com.folioreader.Config" />
     </data>
 
     <ScrollView
@@ -57,6 +60,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.autoScroll}"
+                android:minHeight="27dp"
                 app:layout_constraintBottom_toTopOf="@id/lbl_auto_scroll_interval_text_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lbl_settings_text_view"
@@ -83,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:padding="8dp"
-                android:text="15s"
+                android:text="@{config.getTimeUnitFromTimestamp(config.intervalAutoScroll)}"
                 android:textColor="@color/text_color"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -95,6 +100,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:clickable="true"
+                android:enabled="@{config.autoScroll}"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
@@ -103,23 +109,28 @@
                 app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view"
                 app:srcCompat="@drawable/ic_round_minus" />
 
-            <androidx.appcompat.widget.AppCompatSeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/auto_scroll_interval_slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:value="15"
-                android:valueFrom="1"
-                android:valueTo="30"
+                android:enabled="@{config.autoScroll}"
+                android:stepSize="1"
+                android:value="@{config.intervalAutoScroll/15}"
+                android:valueFrom="0"
+                android:valueTo="120"
+                app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="@id/auto_scroll_interval_text_view"
                 app:layout_constraintEnd_toStartOf="@id/increase_auto_scroll_interval_image_view"
                 app:layout_constraintStart_toEndOf="@id/reduce_auto_scroll_interval_image_view"
-                app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view" />
+                app:layout_constraintTop_toTopOf="@id/auto_scroll_interval_text_view"
+                app:tickVisible="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/increase_auto_scroll_interval_image_view"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:clickable="true"
+                android:enabled="@{config.autoScroll}"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
@@ -148,6 +159,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.continuousAutoScroll}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/auto_scroll_interval_text_view"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -160,7 +173,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:padding="8dp"
-                android:text="15%"
+                android:text="@{config.intervalContinuousAutoScroll+`%`}"
                 android:textColor="@color/text_color"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -172,6 +185,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:clickable="true"
+                android:enabled="@{config.continuousAutoScroll}"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
@@ -180,23 +194,28 @@
                 app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view"
                 app:srcCompat="@drawable/ic_round_minus" />
 
-            <androidx.appcompat.widget.AppCompatSeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/contiguous_auto_scroll_interval_slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:value="15"
-                android:valueFrom="1"
-                android:valueTo="30"
+                android:enabled="@{config.continuousAutoScroll}"
+                android:stepSize="5"
+                android:value="@{config.intervalContinuousAutoScroll}"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
                 app:layout_constraintEnd_toStartOf="@id/increase_contiguous_auto_scroll_interval_image_view"
                 app:layout_constraintStart_toEndOf="@id/reduce_contiguous_auto_scroll_interval_image_view"
-                app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view" />
+                app:layout_constraintTop_toTopOf="@id/contiguous_auto_scroll_interval_text_view"
+                app:tickVisible="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/increase_contiguous_auto_scroll_interval_image_view"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:clickable="true"
+                android:enabled="@{config.continuousAutoScroll}"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
@@ -226,6 +245,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.wholePageAtATime}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -251,6 +272,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.useVolumeForControlNavigation}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/whole_page_switch"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -277,6 +300,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.swipeForControlBrightness}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/volume_to_control_switch"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -302,7 +327,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:padding="8dp"
-                android:text="15%"
+                android:text="@{config.lightFilter+`%`}"
                 android:textColor="@color/text_color"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -322,17 +347,20 @@
                 app:layout_constraintTop_toTopOf="@id/blue_light_text_view"
                 app:srcCompat="@drawable/ic_round_minus" />
 
-            <androidx.appcompat.widget.AppCompatSeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/blue_light_slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:value="15"
-                android:valueFrom="1"
-                android:valueTo="30"
+                android:stepSize="5"
+                android:value="@{config.lightFilter}"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="@id/blue_light_text_view"
                 app:layout_constraintEnd_toStartOf="@id/increase_blue_light_image_view"
                 app:layout_constraintStart_toEndOf="@id/reduce_blue_light_image_view"
-                app:layout_constraintTop_toTopOf="@id/blue_light_text_view" />
+                app:layout_constraintTop_toTopOf="@id/blue_light_text_view"
+                app:tickVisible="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/increase_blue_light_image_view"
@@ -369,6 +397,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.dimOnInactive}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/blue_light_text_view"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -380,28 +410,38 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:enabled="@{config.dimOnInactive}"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/inactive_dim_switch">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/five_min_radio_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{config.dimOnInactiveTime==5}"
+                    android:enabled="@{config.dimOnInactive}"
                     android:text="@string/_5_minutes"
                     android:textColor="@color/text_color"
                     android:textSize="14sp" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/ten_min_radio_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{config.dimOnInactiveTime==10}"
+                    android:enabled="@{config.dimOnInactive}"
                     android:text="@string/_10_minutes"
                     android:textColor="@color/text_color"
                     android:textSize="14sp" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/fifteen_min_radio_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{config.dimOnInactiveTime==15}"
+                    android:enabled="@{config.dimOnInactive}"
                     android:text="@string/_15_minutes"
                     android:textColor="@color/text_color"
                     android:textSize="14sp" />
@@ -428,6 +468,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.shakeToTakeScreenShort}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/inactive_dim_times_radio_group"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -454,6 +496,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.justifiedAlignment}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lbl_shake_ss_text_view"
                 app:thumbTint="@color/switch_thumb_tint_color"
@@ -479,7 +523,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:padding="8dp"
-                android:text="15%"
+                android:text="@{config.lineHeight+`%`}"
                 android:textColor="@color/text_color"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -499,17 +543,20 @@
                 app:layout_constraintTop_toTopOf="@id/line_height_text_view"
                 app:srcCompat="@drawable/ic_round_minus" />
 
-            <androidx.appcompat.widget.AppCompatSeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/line_height_slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:value="15"
-                android:valueFrom="1"
-                android:valueTo="30"
+                android:stepSize="5"
+                android:value="@{config.lineHeight}"
+                android:valueFrom="0"
+                android:valueTo="100"
+                app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="@id/line_height_text_view"
                 app:layout_constraintEnd_toStartOf="@id/increase_line_height_image_view"
                 app:layout_constraintStart_toEndOf="@id/reduce_line_height_image_view"
-                app:layout_constraintTop_toTopOf="@id/line_height_text_view" />
+                app:layout_constraintTop_toTopOf="@id/line_height_text_view"
+                app:tickVisible="false" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/increase_line_height_image_view"
@@ -546,6 +593,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/round_off_white_bg"
+                android:checked="@{config.hyphenation}"
+                android:minHeight="27dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/line_height_text_view"
                 app:thumbTint="@color/switch_thumb_tint_color"

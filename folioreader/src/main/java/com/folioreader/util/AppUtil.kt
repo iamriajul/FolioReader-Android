@@ -119,6 +119,7 @@ class AppUtil {
                 obj.put(Config.CONFIG_SHAKE_TO_TAKE_SCREEN_SHORT, config.isShakeToTakeScreenShort)
                 obj.put(Config.CONFIG_JUSTIFIED_ALIGNMENT, config.isJustifiedAlignment)
                 obj.put(Config.CONFIG_LINE_HEIGHT, config.lineHeight)
+                obj.put(Config.CONFIG_LIGHT_FILTER, config.lightFilter)
                 obj.put(Config.CONFIG_HYPHENATION, config.isHyphenation)
 
                 SharedPreferenceUtil.putSharedPreferencesString(
@@ -132,19 +133,19 @@ class AppUtil {
         }
 
         @JvmStatic
-        fun getSavedConfig(context: Context?): Config? {
+        fun getSavedConfig(context: Context?): Config {
             val json = getSharedPreferencesString(context, Config.INTENT_CONFIG, null)
             if (json != null) {
-                try {
+                return try {
                     val jsonObject = JSONObject(json)
-                    return Config(jsonObject)
+                    Config(jsonObject)
                 } catch (e: JSONException) {
                     Log.e(LOG_TAG, e.message ?: "")
-                    return null
+                    Config()
                 }
 
             }
-            return null
+            return Config()
         }
 
         fun actionToString(action: Int): String {

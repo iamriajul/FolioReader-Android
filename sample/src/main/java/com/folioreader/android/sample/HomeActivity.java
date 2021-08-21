@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity
                 .setOnClosedListener(this);
 
         getHighlightsAndSave();
-        openRawFile();
+//        openRawFile();
         findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

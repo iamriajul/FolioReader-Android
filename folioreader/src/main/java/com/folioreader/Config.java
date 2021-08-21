@@ -9,6 +9,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
+
+import com.folioreader.util.AppUtil;
 
 import org.json.JSONObject;
 
@@ -16,7 +20,7 @@ import org.json.JSONObject;
  * Configuration class for FolioReader.
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class Config implements Parcelable {
+public class Config extends BaseObservable implements Parcelable {
 
     private static final String LOG_TAG = Config.class.getSimpleName();
     public static final String INTENT_CONFIG = "config";
@@ -36,6 +40,7 @@ public class Config implements Parcelable {
     public static final String CONFIG_WHOLE_PAGE_AT_A_TIME_SCROLL = "whole_page_at_a_time";
     public static final String CONFIG_USE_VOLUME_TO_CONTROL_NAVIGATION = "volume_control_navigation";
     public static final String CONFIG_SWIPE_TO_CONTROL_BRIGHTNESS = "swipe_control_brightness";
+    public static final String CONFIG_LIGHT_FILTER = "light_filter";
     public static final String CONFIG_DIM_ON_INACTIVE = "dim_on_inactive";
     public static final String CONFIG_DIM_ON_INACTIVE_TIME = "dim_on_inactive_time";
     public static final String CONFIG_SHAKE_TO_TAKE_SCREEN_SHORT = "shake_to_take_ss";
@@ -57,14 +62,15 @@ public class Config implements Parcelable {
     private AllowedDirection allowedDirection = DEFAULT_ALLOWED_DIRECTION;
     private Direction direction = DEFAULT_DIRECTION;
     private boolean autoScroll = false;
-    private long intervalAutoScroll = 0;
+    private int intervalAutoScroll = 0;
     private boolean continuousAutoScroll = false;
-    private long intervalContinuousAutoScroll = 0;
+    private int intervalContinuousAutoScroll = 0;
     private boolean wholePageAtATime = false;
     private boolean useVolumeForControlNavigation = false;
     private boolean swipeForControlBrightness = false;
+    private int lightFilter = 0;
     private boolean dimOnInactive = false;
-    private long dimOnInactiveTime = 0;
+    private int dimOnInactiveTime = 0;
     private boolean shakeToTakeScreenShort = false;
     private boolean justifiedAlignment = false;
     private int lineHeight = 0;
@@ -97,16 +103,17 @@ public class Config implements Parcelable {
                 jsonObject.optString(CONFIG_ALLOWED_DIRECTION));
         direction = getDirectionFromString(LOG_TAG, jsonObject.optString(CONFIG_DIRECTION));
         autoScroll = jsonObject.optBoolean(CONFIG_ENABLE_AUTO_SCROLL);
-        intervalAutoScroll = jsonObject.optLong(CONFIG_INTERVAL_AUTO_SCROLL);
+        intervalAutoScroll = jsonObject.optInt(CONFIG_INTERVAL_AUTO_SCROLL);
         continuousAutoScroll = jsonObject.optBoolean(CONFIG_CONTINUOUS_AUTO_SCROLL);
-        intervalContinuousAutoScroll = jsonObject.optLong(CONFIG_INTERVAL_CONTINUOUS_AUTO_SCROLL);
+        intervalContinuousAutoScroll = jsonObject.optInt(CONFIG_INTERVAL_CONTINUOUS_AUTO_SCROLL);
         wholePageAtATime = jsonObject.optBoolean(CONFIG_WHOLE_PAGE_AT_A_TIME_SCROLL);
         useVolumeForControlNavigation = jsonObject.optBoolean(CONFIG_USE_VOLUME_TO_CONTROL_NAVIGATION);
         swipeForControlBrightness = jsonObject.optBoolean(CONFIG_SWIPE_TO_CONTROL_BRIGHTNESS);
         dimOnInactive = jsonObject.optBoolean(CONFIG_DIM_ON_INACTIVE);
-        dimOnInactiveTime = jsonObject.optLong(CONFIG_DIM_ON_INACTIVE_TIME);
+        dimOnInactiveTime = jsonObject.optInt(CONFIG_DIM_ON_INACTIVE_TIME);
         shakeToTakeScreenShort = jsonObject.optBoolean(CONFIG_SHAKE_TO_TAKE_SCREEN_SHORT);
         justifiedAlignment = jsonObject.optBoolean(CONFIG_JUSTIFIED_ALIGNMENT);
+        lightFilter = jsonObject.optInt(CONFIG_LIGHT_FILTER);
         lineHeight = jsonObject.optInt(CONFIG_LINE_HEIGHT);
         hyphenation = jsonObject.optBoolean(CONFIG_HYPHENATION);
 
@@ -119,14 +126,14 @@ public class Config implements Parcelable {
         themeColor = in.readInt();
         showTts = in.readByte() != 0;
         autoScroll = in.readByte() != 0;
-        intervalAutoScroll = in.readLong();
+        intervalAutoScroll = in.readInt();
         continuousAutoScroll = in.readByte() != 0;
-        intervalContinuousAutoScroll = in.readLong();
+        intervalContinuousAutoScroll = in.readInt();
         wholePageAtATime = in.readByte() != 0;
         useVolumeForControlNavigation = in.readByte() != 0;
         swipeForControlBrightness = in.readByte() != 0;
         dimOnInactive = in.readByte() != 0;
-        dimOnInactiveTime = in.readLong();
+        dimOnInactiveTime = in.readInt();
         shakeToTakeScreenShort = in.readByte() != 0;
         justifiedAlignment = in.readByte() != 0;
         lineHeight = in.readInt();
@@ -141,14 +148,14 @@ public class Config implements Parcelable {
         dest.writeInt(themeColor);
         dest.writeByte((byte) (showTts ? 1 : 0));
         dest.writeByte((byte) (autoScroll ? 1 : 0));
-        dest.writeLong(intervalAutoScroll);
+        dest.writeInt(intervalAutoScroll);
         dest.writeByte((byte) (continuousAutoScroll ? 1 : 0));
-        dest.writeLong(intervalContinuousAutoScroll);
+        dest.writeInt(intervalContinuousAutoScroll);
         dest.writeByte((byte) (wholePageAtATime ? 1 : 0));
         dest.writeByte((byte) (useVolumeForControlNavigation ? 1 : 0));
         dest.writeByte((byte) (swipeForControlBrightness ? 1 : 0));
         dest.writeByte((byte) (dimOnInactive ? 1 : 0));
-        dest.writeLong(dimOnInactiveTime);
+        dest.writeInt(dimOnInactiveTime);
         dest.writeByte((byte) (shakeToTakeScreenShort ? 1 : 0));
         dest.writeByte((byte) (justifiedAlignment ? 1 : 0));
         dest.writeInt(lineHeight);
@@ -204,30 +211,36 @@ public class Config implements Parcelable {
         }
     }
 
+    @Bindable
     public int getFont() {
         return font;
     }
 
     public Config setFont(int font) {
         this.font = font;
+        notifyPropertyChanged(BR.font);
         return this;
     }
 
+    @Bindable
     public int getFontSize() {
         return fontSize;
     }
 
     public Config setFontSize(int fontSize) {
         this.fontSize = fontSize;
+        notifyPropertyChanged(BR.fontSize);
         return this;
     }
 
+    @Bindable
     public boolean isNightMode() {
         return nightMode;
     }
 
     public Config setNightMode(boolean nightMode) {
         this.nightMode = nightMode;
+        notifyPropertyChanged(BR.nightMode);
         return this;
     }
 
@@ -263,15 +276,18 @@ public class Config implements Parcelable {
         return this;
     }
 
+    @Bindable
     public boolean isShowTts() {
         return showTts;
     }
 
     public Config setShowTts(boolean showTts) {
         this.showTts = showTts;
+        notifyPropertyChanged(BR.showTts);
         return this;
     }
 
+    @Bindable
     public AllowedDirection getAllowedDirection() {
         return allowedDirection;
     }
@@ -307,10 +323,12 @@ public class Config implements Parcelable {
             Log.w(LOG_TAG, "-> allowedDirection is " + allowedDirection
                     + ", defaulting direction to " + direction);
         }
+        notifyPropertyChanged(BR.allowedDirection);
 
         return this;
     }
 
+    @Bindable
     public Direction getDirection() {
         return direction;
     }
@@ -343,6 +361,7 @@ public class Config implements Parcelable {
         } else {
             this.direction = direction;
         }
+        notifyPropertyChanged(BR.direction);
 
         return this;
     }
@@ -354,117 +373,165 @@ public class Config implements Parcelable {
 
     public Config setAutoScroll(boolean autoScroll) {
         this.autoScroll = autoScroll;
+        notifyPropertyChanged(BR.autoScroll);
         return this;
     }
 
-    public Config setIntervalAutoScroll(long intervalAutoScroll) {
+    public Config setIntervalAutoScroll(int intervalAutoScroll) {
         this.intervalAutoScroll = intervalAutoScroll;
+        notifyPropertyChanged(BR.intervalAutoScroll);
         return this;
     }
 
     public Config setContinuousAutoScroll(boolean continuousAutoScroll) {
         this.continuousAutoScroll = continuousAutoScroll;
+        notifyPropertyChanged(BR.continuousAutoScroll);
         return this;
     }
 
-    public Config setIntervalContinuousAutoScroll(long intervalContinuousAutoScroll) {
+    public Config setIntervalContinuousAutoScroll(int intervalContinuousAutoScroll) {
         this.intervalContinuousAutoScroll = intervalContinuousAutoScroll;
+        notifyPropertyChanged(BR.intervalContinuousAutoScroll);
         return this;
     }
 
     public Config setWholePageAtATime(boolean wholePageAtATime) {
         this.wholePageAtATime = wholePageAtATime;
+        notifyPropertyChanged(BR.wholePageAtATime);
         return this;
     }
 
     public Config setUseVolumeForControlNavigation(boolean useVolumeForControlNavigation) {
         this.useVolumeForControlNavigation = useVolumeForControlNavigation;
+        notifyPropertyChanged(BR.useVolumeForControlNavigation);
         return this;
     }
 
     public Config setSwipeForControlBrightness(boolean swipeForControlBrightness) {
         this.swipeForControlBrightness = swipeForControlBrightness;
+        notifyPropertyChanged(BR.swipeForControlBrightness);
+        return this;
+    }
+
+    public Config setLightFilter(int lightFilter) {
+        this.lightFilter = lightFilter;
+        notifyPropertyChanged(BR.lightFilter);
         return this;
     }
 
     public Config setDimOnInactive(boolean dimOnInactive) {
         this.dimOnInactive = dimOnInactive;
+        notifyPropertyChanged(BR.dimOnInactive);
         return this;
     }
 
-    public Config setDimOnInactiveTime(long dimOnInactiveTime) {
+    public Config setDimOnInactiveTime(int dimOnInactiveTime) {
         this.dimOnInactiveTime = dimOnInactiveTime;
+        notifyPropertyChanged(BR.dimOnInactiveTime);
         return this;
     }
 
     public Config setShakeToTakeScreenShort(boolean shakeToTakeScreenShort) {
         this.shakeToTakeScreenShort = shakeToTakeScreenShort;
+        notifyPropertyChanged(BR.shakeToTakeScreenShort);
         return this;
     }
 
     public Config setJustifiedAlignment(boolean justifiedAlignment) {
         this.justifiedAlignment = justifiedAlignment;
+        notifyPropertyChanged(BR.justifiedAlignment);
         return this;
     }
 
     public Config setLineHeight(int lineHeight) {
         this.lineHeight = lineHeight;
+        notifyPropertyChanged(BR.lineHeight);
         return this;
     }
 
     public Config setHyphenation(boolean hyphenation) {
         this.hyphenation = hyphenation;
+        notifyPropertyChanged(BR.hyphenation);
         return this;
     }
 
+    @Bindable
     public boolean isAutoScroll() {
         return autoScroll;
     }
 
-    public long getIntervalAutoScroll() {
+    @Bindable
+    public int getIntervalAutoScroll() {
         return intervalAutoScroll;
     }
 
+    public String getTimeUnitFromTimestamp(long timestamp) {
+        if (timestamp == 0) return "0s";
+        int minutes = (int) (timestamp % 3600) / 60;
+        int seconds = (int) (timestamp % 60);
+        if (minutes > 0) {
+            return minutes + "m";
+        } else {
+            return seconds + "s";
+        }
+    }
+
+    @Bindable
     public boolean isContinuousAutoScroll() {
         return continuousAutoScroll;
     }
 
-    public long getIntervalContinuousAutoScroll() {
+    @Bindable
+    public int getIntervalContinuousAutoScroll() {
         return intervalContinuousAutoScroll;
     }
 
+    @Bindable
     public boolean isWholePageAtATime() {
         return wholePageAtATime;
     }
 
+    @Bindable
     public boolean isUseVolumeForControlNavigation() {
         return useVolumeForControlNavigation;
     }
 
+    @Bindable
+    public int getLightFilter() {
+        return lightFilter;
+    }
+
+    @Bindable
     public boolean isSwipeForControlBrightness() {
         return swipeForControlBrightness;
     }
 
+    @Bindable
     public boolean isDimOnInactive() {
         return dimOnInactive;
     }
 
-    public long getDimOnInactiveTime() {
+    @Bindable
+    public int getDimOnInactiveTime() {
         return dimOnInactiveTime;
     }
 
+    @Bindable
     public boolean isShakeToTakeScreenShort() {
         return shakeToTakeScreenShort;
     }
 
+    @Bindable
     public boolean isJustifiedAlignment() {
         return justifiedAlignment;
     }
 
+    @Bindable
     public int getLineHeight() {
         return lineHeight;
     }
 
+    @Bindable
     public boolean isHyphenation() {
         return hyphenation;
     }
@@ -481,6 +548,11 @@ public class Config implements Parcelable {
                 ", allowedDirection=" + allowedDirection +
                 ", direction=" + direction +
                 '}';
+    }
+
+    @Override
+    public void notifyPropertyChanged(int fieldId) {
+        super.notifyPropertyChanged(fieldId);
     }
 }
 
