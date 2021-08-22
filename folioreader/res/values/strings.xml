@@ -136,5 +136,11 @@
     <string name="enable_hyphenation">"Enable Hyphenation "</string>
     <string name="bookmark">Bookmark</string>
     <string name="note">Note</string>
+    <string name="txt_a">A</string>
+    <string name="txt_default">Default</string>
+    <string name="font_times">Times</string>
+    <string name="font_arial">Arial</string>
+    <string name="font_verdana">Verdana</string>
+    <string name="font_castle_t">CastleT</string>
 
 </resources>

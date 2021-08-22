@@ -59,99 +59,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvPages"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/pages_format"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    tools:text="Pages 1 of 23" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvChapterName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvPages"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/chapter_name_format"
-                    android:textColor="#D7CCC8"
-                    tools:text="(This Chapter)" />
+                <include
+                    android:id="@+id/pageInfo"
+                    layout="@layout/layout_page_info" />
 
-                <SeekBar
-                    android:id="@+id/sbPages"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvChapterName"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:max="24"
-                    android:progress="1"
-                    android:progressBackgroundTint="#FFFFFF"
-                    android:progressTint="#17CE3C"
-                    android:thumbTint="#17CE3C" />
+                <include
+                    android:id="@+id/brightness"
+                    layout="@layout/layout_brightness_and_themes" />
+
+                <include
+                    android:id="@+id/fontFamily"
+                    layout="@layout/layout_font_family" />
 
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="28dp"
-                    android:layout_below="@+id/sbPages"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="horizontal">
-
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/ivChapters"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_chapters" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/ivBookmark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_bookmark" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/ivFullScreen"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_full_screen" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_rotate" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_brightness"
-                        app:srcCompat="@drawable/ic_brightness" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_font" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                <include
+                    android:id="@+id/bottomMenus"
+                    layout="@layout/layout_bottom_menus" />
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>

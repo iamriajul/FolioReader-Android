@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivBrightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_brightness" />
+
+        <SeekBar
+            android:id="@+id/sbBrightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/tvCurrentBrightness"
+            android:layout_toEndOf="@+id/ivBrightness"
+            android:max="100"
+            android:progress="75"
+            android:progressBackgroundTint="#FFFFFF"
+            android:progressTint="#17CE3C"
+            android:thumbTint="#17CE3C" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvCurrentBrightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="75"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvWhite"
+            android:layout_width="58dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvBrown"
+            android:layout_width="58dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@color/brown"
+            app:cardCornerRadius="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvBlack"
+            android:layout_width="58dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@color/black"
+            app:cardCornerRadius="8dp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

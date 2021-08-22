@@ -67,10 +67,7 @@ import com.folioreader.ui.fragment.FolioPageFragment
 import com.folioreader.ui.fragment.MediaControllerFragment
 import com.folioreader.ui.fragment.TableOfContentFragment
 import com.folioreader.ui.fragment.bookmark.BookmarkHighlightAndNoteFragment
-import com.folioreader.ui.view.ConfigBottomSheetDialogFragment
-import com.folioreader.ui.view.DirectionalViewpager
-import com.folioreader.ui.view.FolioAppBarLayout
-import com.folioreader.ui.view.MediaControllerCallback
+import com.folioreader.ui.view.*
 import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
 import com.folioreader.util.UiUtil
@@ -351,23 +348,64 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
         setupRecyclerViews()
         setupListeners()
+        showPageInfoOrOthers(hasPageInfo = true)
     }
 
     private fun setupListeners() {
-        binding.ivChapters.setOnClickListener {
+        binding.bottomMenus.btnChapters.setOnClickListener {
+            clearMenuItemChecked()
             openStartDrawer()
         }
 
-        binding.ivBookmark.setOnClickListener {
+        binding.bottomMenus.btnBookmark.setOnClickListener {
+            clearMenuItemChecked()
             showBookmarkHighlightAndNote()
         }
 
-        binding.ivFullScreen.setOnClickListener {
+        binding.bottomMenus.btnFullScreen.setOnClickListener {
             hasFullScreen = !hasFullScreen
             fullScreenMode()
         }
 
+        binding.bottomMenus.btnBrightness.setOnClickListener {
+            showPageInfoOrOthers(hasBrightNess = true)
+        }
 
+        binding.bottomMenus.btnRotate.setOnClickListener {
+            showPageInfoOrOthers(hasPageInfo = true)
+        }
+
+        binding.bottomMenus.btnFontFamily.setOnClickListener {
+            showPageInfoOrOthers(hasFontFamily = true)
+        }
+
+    }
+
+    private fun clearMenuItemChecked() {
+        binding.bottomMenus.buttonMenuGroup.clearChecked()
+        showPageInfoOrOthers(hasPageInfo = true)
+    }
+
+    private fun showPageInfoOrOthers(
+        hasPageInfo: Boolean = false,
+        hasBrightNess: Boolean = false,
+        hasFontFamily: Boolean = false
+    ){
+        if(hasPageInfo){
+            binding.pageInfo.root.show()
+        } else {
+            binding.pageInfo.root.hide()
+        }
+        if(hasBrightNess){
+            binding.brightness.root.show()
+        } else {
+            binding.brightness.root.hide()
+        }
+        if(hasFontFamily){
+            binding.fontFamily.root.show()
+        } else {
+            binding.fontFamily.root.hide()
+        }
     }
 
     private fun setupRecyclerViews() {

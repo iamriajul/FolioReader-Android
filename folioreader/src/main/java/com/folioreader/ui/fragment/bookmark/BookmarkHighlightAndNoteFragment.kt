@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.folioreader.R
 import com.folioreader.databinding.FragmentBookmarkHighlightAndNoteBinding
 import com.folioreader.model.bookmark.Bookmark
+import com.folioreader.model.bookmark.Highlight
 import com.folioreader.model.bookmark.Note
 import com.folioreader.ui.base.BaseDialogFragment
 import com.folioreader.ui.base.BaseFragment
@@ -22,6 +23,7 @@ class BookmarkHighlightAndNoteFragment :
 
     private lateinit var bookmarkAdapter: BookmarkAdapter
     private lateinit var noteAdapter: NoteAdapter
+    private lateinit var highlightAdapter: HighlightAdapter
 
     companion object {
         const val TAG = "BookmarkHighlightAndNot"
@@ -46,6 +48,8 @@ class BookmarkHighlightAndNoteFragment :
     private fun setupRecyclerViews() {
         bookmarkAdapter = BookmarkAdapter()
         noteAdapter = NoteAdapter()
+        highlightAdapter = HighlightAdapter()
+
         binding.rvBookmark.adapter = bookmarkAdapter
 
         bookmarkAdapter.differ.submitList(
@@ -63,6 +67,32 @@ class BookmarkHighlightAndNoteFragment :
                 Note(4, "Book 01", "Chapter 04", 53)
             )
         )
+
+        highlightAdapter.differ.submitList(
+            listOf(
+                Highlight(
+                    1,
+                    "Book 01",
+                    "Chapter 01",
+                    3,
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                ),
+                Highlight(
+                    3,
+                    "Book 01",
+                    "Chapter 03",
+                    26,
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                ),
+                Highlight(
+                    4,
+                    "Book 01",
+                    "Chapter 04",
+                    53,
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                )
+            )
+        )
     }
 
     private fun setupListeners() {
@@ -75,16 +105,14 @@ class BookmarkHighlightAndNoteFragment :
             when (checkedId) {
                 R.id.btnBookmark -> {
                     title = getString(R.string.bookmark)
-                    binding.rvBookmark.show()
                     binding.rvBookmark.adapter = bookmarkAdapter
                 }
                 R.id.btnHighLight -> {
                     title = getString(R.string.highlight)
-                    binding.rvBookmark.hide()
+                    binding.rvBookmark.adapter = highlightAdapter
                 }
                 R.id.btnNote -> {
                     title = getString(R.string.note)
-                    binding.rvBookmark.show()
                     binding.rvBookmark.adapter = noteAdapter
                 }
             }
