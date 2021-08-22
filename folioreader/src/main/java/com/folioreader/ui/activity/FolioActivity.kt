@@ -34,7 +34,6 @@ import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -295,6 +294,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         } else {
             setupBook()
         }
+
+        observeAutoScrollingSetting()
     }
 
     private fun initActionBar() {
@@ -1237,6 +1238,25 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 val bundle = FolioPageFragmentAdapter.getBundleFromSavedState(savedState)
                 bundle?.putParcelable(FolioPageFragment.BUNDLE_SEARCH_LOCATOR, null)
             }
+        }
+    }
+
+    private val autoScrollHandler = Handler(Looper.getMainLooper())
+    private fun observeAutoScrollingSetting() {
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isAutoScroll) {
+            autoScrollHandler.postDelayed({
+                val folioPageFragment =
+                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
+                if (folioPageFragment != null) {
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
+                    if (!folioPageFragment.scrollToNext()) {
+                        binding.folioPageViewPager.currentItem =
+                            binding.folioPageViewPager.currentItem + 1
+                    }
+                    observeAutoScrollingSetting()
+                }
+            }, config.intervalAutoScroll * 1000L)
         }
     }
 }

@@ -3,6 +3,8 @@ package com.folioreader.ui.adapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -36,19 +38,21 @@ public class FolioPageFragmentAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         super.destroyItem(container, position, object);
         fragments.set(position, null);
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
         fragments.set(position, fragment);
         return fragment;
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
 
