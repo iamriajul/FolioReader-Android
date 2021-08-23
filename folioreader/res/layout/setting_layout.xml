@@ -214,7 +214,7 @@
                 android:enabled="@{config.continuousAutoScroll}"
                 android:stepSize="5"
                 android:value="@{config.intervalContinuousAutoScroll}"
-                android:valueFrom="2"
+                android:valueFrom="5"
                 android:valueTo="100"
                 app:labelBehavior="gone"
                 app:layout_constraintBottom_toBottomOf="@id/contiguous_auto_scroll_interval_text_view"

@@ -62,9 +62,9 @@ public class Config extends BaseObservable implements Parcelable {
     private AllowedDirection allowedDirection = DEFAULT_ALLOWED_DIRECTION;
     private Direction direction = DEFAULT_DIRECTION;
     private boolean autoScroll = false;
-    private int intervalAutoScroll = 0;
+    private int intervalAutoScroll = 2*15;
     private boolean continuousAutoScroll = false;
-    private int intervalContinuousAutoScroll = 0;
+    private int intervalContinuousAutoScroll = 2*15;
     private boolean wholePageAtATime = false;
     private boolean useVolumeForControlNavigation = false;
     private boolean swipeForControlBrightness = false;
