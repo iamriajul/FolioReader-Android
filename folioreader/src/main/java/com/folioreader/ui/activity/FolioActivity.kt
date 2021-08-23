@@ -34,6 +34,7 @@ import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -55,6 +56,7 @@ import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighlightImpl
 import com.folioreader.model.TOCLinkWrapper
 import com.folioreader.model.event.MediaOverlayPlayPauseEvent
+import com.folioreader.model.event.ReloadDataEvent
 import com.folioreader.model.locators.ReadLocator
 import com.folioreader.model.locators.SearchLocator
 import com.folioreader.ui.adapter.FolioPageFragmentAdapter
@@ -352,12 +354,81 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         setupRecyclerViews()
         setupListeners()
         showPageInfoOrOthers(hasPageInfo = true)
+
+        updateFontSize()
+
+        configFonts()
+    }
+
+
+    private fun configFonts() {
+        selectFont(config.font, false)
+        binding.fontFamily.bgFontFamily.check(getCheckedButtonId(config.font))
+
+        binding.fontFamily.sbFontSize.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                config.fontSize = progress
+                AppUtil.saveConfig(applicationContext, config)
+                EventBus.getDefault().post(ReloadDataEvent())
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+
+        binding.fontFamily.bgFontFamily.addOnButtonCheckedListener { _, checkedId, checked ->
+            if (checked) {
+                val fontPosition = when (checkedId) {
+                    R.id.btnTimes -> {
+                        FONT_TIMES
+                    }
+                    R.id.btnArial -> {
+                        FONT_ARIAL
+                    }
+                    R.id.btnVerdana -> {
+                        FONT_VERDANA
+                    }
+                    R.id.btnCastleT -> {
+                        FONT_CASTLE_T
+                    }
+                    else -> {
+                        FONT_TIMES
+                    }
+                }
+                selectFont(fontPosition, true)
+            }
+        }
+    }
+
+    private fun getCheckedButtonId(font: Int): Int {
+        return when (font) {
+            FONT_TIMES -> binding.fontFamily.btnTimes.id
+            FONT_ARIAL -> binding.fontFamily.btnArial.id
+            FONT_VERDANA -> binding.fontFamily.btnVerdana.id
+            FONT_CASTLE_T -> binding.fontFamily.btnCastleT.id
+            else -> binding.fontFamily.btnDefault.id
+        }
+    }
+
+    private fun selectFont(selectedFont: Int, isReloadNeeded: Boolean) {
+        config.font = selectedFont
+        if (isReloadNeeded) {
+            AppUtil.saveConfig(this, config)
+            EventBus.getDefault().post(ReloadDataEvent())
+        }
+    }
+
+
+    private fun updateFontSize() {
+        binding.fontFamily.sbFontSize.progress = config.fontSize
     }
 
     private fun setupListeners() {
-        binding.bottomMenus.btnChapters.setOnClickListener {
+        /*binding.bottomMenus.btnChapters.setOnClickListener {
             clearMenuItemChecked()
-            openStartDrawer()
+            toggleStartDrawer()
         }
 
         binding.bottomMenus.btnBookmark.setOnClickListener {
@@ -380,31 +451,61 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         binding.bottomMenus.btnFontFamily.setOnClickListener {
             showPageInfoOrOthers(hasFontFamily = true)
+        }*/
+
+        binding.bottomMenus.buttonMenuGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btnChapters -> {
+                        clearMenuItemChecked()
+                        toggleStartDrawer()
+                    }
+                    R.id.btnBookmark -> {
+                        clearMenuItemChecked()
+                        showBookmarkHighlightAndNote()
+                    }
+                    R.id.btnFullScreen -> {
+                        hasFullScreen = !hasFullScreen
+                        fullScreenMode()
+                    }
+                    R.id.btnBrightness -> {
+                        showPageInfoOrOthers(hasBrightNess = true)
+                    }
+                    R.id.btnRotate -> {
+                        showPageInfoOrOthers(hasPageInfo = true)
+                    }
+                    R.id.btnFontFamily -> {
+                        showPageInfoOrOthers(hasFontFamily = true)
+                    }
+                }
+            } else {
+                showPageInfoOrOthers(hasPageInfo = true)
+            }
         }
+
 
     }
 
     private fun clearMenuItemChecked() {
         binding.bottomMenus.buttonMenuGroup.clearChecked()
-        showPageInfoOrOthers(hasPageInfo = true)
     }
 
     private fun showPageInfoOrOthers(
         hasPageInfo: Boolean = false,
         hasBrightNess: Boolean = false,
         hasFontFamily: Boolean = false
-    ){
-        if(hasPageInfo){
+    ) {
+        if (hasPageInfo) {
             binding.pageInfo.root.show()
         } else {
             binding.pageInfo.root.hide()
         }
-        if(hasBrightNess){
+        if (hasBrightNess) {
             binding.brightness.root.show()
         } else {
             binding.brightness.root.hide()
         }
-        if(hasFontFamily){
+        if (hasFontFamily) {
             binding.fontFamily.root.show()
         } else {
             binding.fontFamily.root.hide()
@@ -459,7 +560,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         setSupportActionBar(binding.toolbar)
 
-        config: Config = AppUtil.getSavedConfig(applicationContext)
+        config = AppUtil.getSavedConfig(applicationContext)
 
 //        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
 //        UiUtil.setColorIntToDrawable(config.themeColor, drawable!!)
@@ -1335,7 +1436,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     private fun setConfig(savedInstanceState: Bundle?) {
 
-        var config: Config?
         val intentConfig = intent.getParcelableExtra<Config>(Config.INTENT_CONFIG)
         val overrideConfig = intent.getBooleanExtra(Config.EXTRA_OVERRIDE_CONFIG, false)
         val savedConfig = AppUtil.getSavedConfig(this)
@@ -1351,11 +1451,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 savedConfig
             }
         }
-
-        // Code would never enter this if, just added for any unexpected error
-        // and to avoid lint warning
-        if (config == null)
-            config = Config()
 
         AppUtil.saveConfig(this, config)
         direction = savedConfig?.direction ?: Config.Direction.VERTICAL
@@ -1423,7 +1518,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun onTocClicked(position: Int) {
         val tocLinkWrapper = mTOCAdapter.getItemAt(position) as TOCLinkWrapper
         goToChapter(tocLinkWrapper.tocLink.href ?: "")
-        openStartDrawer()
+        toggleStartDrawer()
     }
 
     override fun onExpanded(position: Int) {

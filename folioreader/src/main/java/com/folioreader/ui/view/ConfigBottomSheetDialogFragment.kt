@@ -79,10 +79,10 @@ class ConfigBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     private fun initViews() {
         inflateView()
-        configFonts()
+//        configFonts()
         binding.viewConfigFontSizeSeekBar.progress = config.fontSize
         configSeekBar()
-        selectFont(config.font, false)
+//        selectFont(config.font, false)
         isNightMode = config.isNightMode
         if (isNightMode) {
             binding.container.setBackgroundColor(
@@ -171,7 +171,7 @@ class ConfigBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun configFonts() {
+    /*private fun configFonts() {
 
         val colorStateList = UiUtil.getColorList(
             config.themeColor,
@@ -219,7 +219,7 @@ class ConfigBottomSheetDialogFragment : BottomSheetDialogFragment() {
         binding.viewConfigFontLato.isSelected = lato
         binding.viewConfigFontLora.isSelected = lora
         binding.viewConfigFontRaleway.isSelected = raleway
-    }
+    }*/
 
     private fun toggleBlackTheme() {
 

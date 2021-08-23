@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,8 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/tvLargeFont"
             android:layout_toEndOf="@+id/tvSmallFont"
-            android:max="100"
-            android:progress="75"
+            android:max="4"
             android:progressBackgroundTint="#FFFFFF"
             android:progressTint="#17CE3C"
             android:thumbTint="#17CE3C" />
@@ -64,7 +63,6 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:weightSum="5"
-            app:checkedButton="@+id/btnDefault"
             app:selectionRequired="true"
             app:singleSelection="true">
 

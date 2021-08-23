@@ -17,8 +17,12 @@
         style="@style/ToggleButtonWithIconOnly"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_chapters" />
 
     <com.google.android.material.button.MaterialButton
@@ -28,6 +32,7 @@
         android:layout_height="24dp"
         android:layout_margin="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_bookmark" />
 
     <com.google.android.material.button.MaterialButton
@@ -37,6 +42,7 @@
         android:layout_height="24dp"
         android:layout_margin="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_full_screen" />
 
     <com.google.android.material.button.MaterialButton
@@ -46,6 +52,7 @@
         android:layout_height="24dp"
         android:layout_margin="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_rotate" />
 
     <com.google.android.material.button.MaterialButton
@@ -55,6 +62,7 @@
         android:layout_height="24dp"
         android:layout_margin="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_brightness" />
 
     <com.google.android.material.button.MaterialButton
@@ -64,6 +72,7 @@
         android:layout_height="24dp"
         android:layout_margin="2dp"
         android:layout_weight="1"
+        android:gravity="center"
         app:icon="@drawable/ic_font" />
 
 </com.google.android.material.button.MaterialButtonToggleGroup>

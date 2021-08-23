@@ -228,7 +228,7 @@ html.nightMode .highlight_underline {border-bottom: 2px solid rgba(240, 40, 20, 
  * Font classes
  *
  */
-
+/*
 @font-face {
     font-family: 'andada';
     src: url('file:///android_asset/fonts/andada/Andada-Regular.otf');
@@ -261,6 +261,42 @@ html.nightMode .highlight_underline {border-bottom: 2px solid rgba(240, 40, 20, 
 .raleway {
      font-family: "raleway", sans-serif;
  }
+
+ */
+
+ @font-face {
+     font-family: 'times';
+     src: url('file:///android_asset/fonts/times/Times.ttf');
+ }
+
+ @font-face {
+     font-family: 'arial';
+     src: url('file:///android_asset/fonts/arial/Arial.ttf');
+ }
+
+ @font-face {
+     font-family: 'verdana';
+     src: url('file:///android_asset/fonts/verdana/Verdana.ttf');
+ }
+
+ @font-face {
+     font-family: 'castlet';
+     src: url('file:///android_asset/fonts/castlet/CastleT.ttf');
+ }
+
+ .times {
+      font-family: "times", sans-serif;
+  }
+ .arial {
+      font-family: "arial", serif;
+  }
+ .verdana {
+      font-family: "verdana", serif;
+  }
+ .castlet {
+      font-family: "castlet", sans-serif;
+  }
+
 
 html.textSizeOne { font-size: 13px !important; }
 html.textSizeTwo { font-size: 15px !important; }

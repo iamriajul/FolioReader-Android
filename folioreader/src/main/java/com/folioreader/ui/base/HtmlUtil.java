@@ -1,6 +1,7 @@
 package com.folioreader.ui.base;
 
 import android.content.Context;
+
 import com.folioreader.Config;
 import com.folioreader.Constants;
 import com.folioreader.R;
@@ -60,18 +61,35 @@ public final class HtmlUtil {
         htmlContent = htmlContent.replace("</head>", toInject);
 
         String classes = "";
+//        switch (config.getFont()) {
+//            case Constants.FONT_ANDADA:
+//                classes = "andada";
+//                break;
+//            case Constants.FONT_LATO:
+//                classes = "lato";
+//                break;
+//            case Constants.FONT_LORA:
+//                classes = "lora";
+//                break;
+//            case Constants.FONT_RALEWAY:
+//                classes = "raleway";
+//                break;
+//            default:
+//                break;
+//        }
+
         switch (config.getFont()) {
-            case Constants.FONT_ANDADA:
-                classes = "andada";
+            case Constants.FONT_TIMES:
+                classes = "times";
                 break;
-            case Constants.FONT_LATO:
-                classes = "lato";
+            case Constants.FONT_ARIAL:
+                classes = "arial";
                 break;
-            case Constants.FONT_LORA:
-                classes = "lora";
+            case Constants.FONT_VERDANA:
+                classes = "verdana";
                 break;
-            case Constants.FONT_RALEWAY:
-                classes = "raleway";
+            case Constants.FONT_CASTLE_T:
+                classes = "castlet";
                 break;
             default:
                 break;
