@@ -40,7 +40,9 @@ import com.folioreader.util.UiUtil
 import dalvik.system.PathClassLoader
 import org.json.JSONObject
 import org.springframework.util.ReflectionUtils
+import java.lang.Exception
 import java.lang.ref.WeakReference
+import kotlin.math.abs
 
 /**
  * @author by mahavir on 3/31/16.
@@ -155,6 +157,8 @@ class FolioWebView : WebView {
     }
 
     private inner class HorizontalGestureListener : GestureDetector.SimpleOnGestureListener() {
+        private val SWIPE_THRESHOLD = 100
+        private val SWIPE_VELOCITY_THRESHOLD = 100
 
         override fun onScroll(
             e1: MotionEvent?,
@@ -162,8 +166,26 @@ class FolioWebView : WebView {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            //Log.d(LOG_TAG, "-> onScroll -> e1 = " + e1 + ", e2 = " + e2 + ", distanceX = " + distanceX + ", distanceY = " + distanceY);
+//            Log.d(LOG_TAG, "-> onScroll -> e1 = $e1, e2 = $e2, distanceX = $distanceX, distanceY = $distanceY")
             lastScrollType = LastScrollType.USER
+            try {
+                val diffY = e2!!.y - e1!!.y
+                val diffX = e2.x - e1.x
+                if (abs(diffX) > abs(diffY)) {
+                    if (abs(diffX) > SWIPE_THRESHOLD && abs(distanceX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            Log.d(LOG_TAG, "onScroll: swipe right")
+//                            onSwipeRight()
+                        } else {
+//                            onSwipeLeft()
+                            Log.d(LOG_TAG, "onScroll: swipe left")
+                        }
+                        return true
+                    }
+                }
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+            }
             return false
         }
 
@@ -173,7 +195,10 @@ class FolioWebView : WebView {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            //Log.d(LOG_TAG, "-> onFling -> e1 = " + e1 + ", e2 = " + e2 + ", velocityX = " + velocityX + ", velocityY = " + velocityY);
+            Log.d(
+                LOG_TAG,
+                "-> onFling -> e1 = " + e1 + ", e2 = " + e2 + ", velocityX = " + velocityX + ", velocityY = " + velocityY
+            );
 
             if (!webViewPager.isScrolling) {
                 // Need to complete the scroll as ViewPager thinks these touch events should not
@@ -181,7 +206,7 @@ class FolioWebView : WebView {
                 //Log.d(LOG_TAG, "-> onFling -> completing scroll");
                 uiHandler.postDelayed({
                     // Delayed to avoid inconsistency of scrolling in WebView
-                    scrollTo(getScrollXPixelsForPage(webViewPager!!.currentItem), 0)
+                    scrollTo(getScrollXPixelsForPage(webViewPager.currentItem), 0)
                 }, 100)
             }
 
@@ -223,6 +248,8 @@ class FolioWebView : WebView {
     }
 
     private inner class VerticalGestureListener : GestureDetector.SimpleOnGestureListener() {
+        private val SWIPE_THRESHOLD = 10
+        private val SWIPE_VELOCITY_THRESHOLD = 10
 
         override fun onScroll(
             e1: MotionEvent?,
@@ -230,10 +257,29 @@ class FolioWebView : WebView {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            //Log.v(LOG_TAG, "-> onScroll -> e1 = " + e1 + ", e2 = " + e2 + ", distanceX = " + distanceX + ", distanceY = " + distanceY);
+//            Log.v(LOG_TAG, "-> onScroll -> e1 = " + e1 + ", e2 = " + e2 + ", distanceX = " + distanceX + ", distanceY = " + distanceY);
             lastScrollType = LastScrollType.USER
+            try {
+                val diffY = e2!!.y - e1!!.y
+                val diffX = e2.x - e1.x
+                if (abs(diffX) > abs(diffY)) {
+                    if (abs(diffX) > SWIPE_THRESHOLD && abs(distanceX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            Log.d(LOG_TAG, "onScroll: swipe right $diffX $diffY")
+//                            onSwipeRight()
+                        } else {
+//                            onSwipeLeft()
+                            Log.d(LOG_TAG, "onScroll: swipe left $diffX $diffY")
+                        }
+                        return true
+                    }
+                }
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+            }
             return false
         }
+
 
         override fun onFling(
             e1: MotionEvent?,
@@ -245,6 +291,29 @@ class FolioWebView : WebView {
             lastScrollType = LastScrollType.USER
             return false
         }
+    }
+
+    fun changeBrightness(X: Float, Y: Float, x: Float, y: Float, distance: Float, type: String) {
+        var newDistance = distance
+        if (type === "Y" && x == X) {
+            newDistance /= 270
+            if (y < Y) {
+                commonBrightness(newDistance)
+            } else {
+                commonBrightness(-newDistance)
+            }
+        } else if (type === "X" && y == Y) {
+            newDistance /= 160
+            if (x > X) {
+                commonBrightness(newDistance)
+            } else {
+                commonBrightness(-newDistance)
+            }
+        }
+    }
+
+    fun commonBrightness(distance: Float) {
+        Log.e(LOG_TAG, "commonBrightness: $distance")
     }
 
     constructor(context: Context) : super(context)
@@ -419,10 +488,9 @@ class FolioWebView : WebView {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        //Log.v(LOG_TAG, "-> onTouchEvent -> " + AppUtil.actionToString(event.getAction()));
-
         if (event == null)
             return false
+//        Log.v(LOG_TAG, "-> onTouchEvent -> " + AppUtil.actionToString(event!!.getAction()));
 
         lastTouchAction = event.action
 
