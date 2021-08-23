@@ -35,10 +35,8 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -68,6 +66,9 @@ import com.folioreader.ui.fragment.MediaControllerFragment
 import com.folioreader.ui.fragment.TableOfContentFragment
 import com.folioreader.ui.fragment.bookmark.BookmarkHighlightAndNoteFragment
 import com.folioreader.ui.view.*
+import com.folioreader.ui.view.ConfigBottomSheetDialogFragment
+import com.folioreader.ui.view.DirectionalViewpager
+import com.folioreader.ui.view.MediaControllerCallback
 import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
 import com.folioreader.util.UiUtil
@@ -332,7 +333,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding.mainDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         initActionBar()
         initMediaController()
-
+        initSettingUI()
         if (ContextCompat.checkSelfPermission(
                 this@FolioActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -346,6 +347,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         } else {
             setupBook()
         }
+
+        observeAutoScrollingSetting()
         setupRecyclerViews()
         setupListeners()
         showPageInfoOrOthers(hasPageInfo = true)
@@ -456,7 +459,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         setSupportActionBar(binding.toolbar)
 
-        config = AppUtil.getSavedConfig(applicationContext)!!
+        config: Config = AppUtil.getSavedConfig(applicationContext)
 
 //        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
 //        UiUtil.setColorIntToDrawable(config.themeColor, drawable!!)
@@ -508,6 +511,149 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         mediaControllerFragment = MediaControllerFragment.getInstance(supportFragmentManager, this)
     }
 
+    private fun initSettingUI() {
+        binding.settingLayout.closeImageView.setOnClickListener {
+            toggleEndDrawer()
+        }
+        val config = AppUtil.getSavedConfig(this)
+        binding.settingLayout.config = config
+        binding.settingLayout.autoScrollSwitch.setOnCheckedChangeListener { _, isChecked ->
+            config.isAutoScroll = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.autoScrollIntervalSlider.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                config.intervalAutoScroll = (value * 15).toInt()
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.increaseAutoScrollIntervalImageView.setOnClickListener {
+            if (config.intervalAutoScroll < 120) {
+                config.intervalAutoScroll = config.intervalAutoScroll + 5
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.reduceAutoScrollIntervalImageView.setOnClickListener {
+            if (config.intervalAutoScroll > 5) {
+                config.intervalAutoScroll = config.intervalAutoScroll - 5
+            } else if (config.intervalAutoScroll > 0) {
+                config.intervalAutoScroll = 0
+            }
+            saveConfig(config)
+        }
+        binding.settingLayout.continuousAutoScrollSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isContinuousAutoScroll = isChecked
+            AppUtil.saveConfig(this, config)
+        }
+        binding.settingLayout.contiguousAutoScrollIntervalSlider.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                config.intervalContinuousAutoScroll = value.toInt()
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.increaseContiguousAutoScrollIntervalImageView.setOnClickListener {
+            if (config.intervalContinuousAutoScroll < 100) {
+                config.intervalContinuousAutoScroll = config.intervalContinuousAutoScroll + 5
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.reduceContiguousAutoScrollIntervalImageView.setOnClickListener {
+            if (config.intervalContinuousAutoScroll > 5) {
+                config.intervalContinuousAutoScroll = config.intervalContinuousAutoScroll - 5
+            } else if (config.intervalContinuousAutoScroll > 0) {
+                config.intervalContinuousAutoScroll = 0
+            }
+            saveConfig(config)
+        }
+
+        binding.settingLayout.wholePageSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isWholePageAtATime = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.volumeToControlSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isUseVolumeForControlNavigation = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.swipeBrightnessSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isSwipeForControlBrightness = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.blueLightSlider.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                config.lightFilter = value.toInt()
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.increaseBlueLightImageView.setOnClickListener {
+            if (config.lightFilter < 100) {
+                config.lightFilter = config.lightFilter + 5
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.reduceBlueLightImageView.setOnClickListener {
+            if (config.lightFilter > 5) {
+                config.lightFilter = config.lightFilter - 5
+            } else if (config.lightFilter > 0) {
+                config.lightFilter = 0
+            }
+            saveConfig(config)
+        }
+        binding.settingLayout.inactiveDimSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isDimOnInactive = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.shakeSsSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isShakeToTakeScreenShort = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.alignmentJustifySwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isJustifiedAlignment = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.lineHeightSlider.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                config.lineHeight = value.toInt()
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.increaseLineHeightImageView.setOnClickListener {
+            if (config.lineHeight < 100) {
+                config.lineHeight = config.lineHeight + 5
+                saveConfig(config)
+            }
+        }
+        binding.settingLayout.reduceLineHeightImageView.setOnClickListener {
+            if (config.lineHeight > 5) {
+                config.lineHeight = config.lineHeight - 5
+            } else if (config.lineHeight > 0) {
+                config.lineHeight = 0
+            }
+            saveConfig(config)
+        }
+        binding.settingLayout.hyphenationSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            config.isHyphenation = isChecked
+            saveConfig(config)
+        }
+        binding.settingLayout.inactiveDimTimesRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
+            when (checkedId) {
+                R.id.five_min_radio_btn -> {
+                    config.dimOnInactiveTime = 5
+                }
+                R.id.ten_min_radio_btn -> {
+                    config.dimOnInactiveTime = 10
+                }
+                R.id.fifteen_min_radio_btn -> {
+                    config.dimOnInactiveTime = 15
+                }
+            }
+            saveConfig(config)
+        }
+    }
+
+    private fun saveConfig(config: Config) {
+        AppUtil.saveConfig(this, config)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
 
@@ -530,7 +676,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             android.R.id.home -> {
                 Log.v(LOG_TAG, "-> onOptionsItemSelected -> drawer")
 //                startContentHighlightActivity()
-                openStartDrawer()
+                toggleStartDrawer()
                 return true
 
             }
@@ -559,7 +705,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 return true
             }
             R.id.itemSetting -> {
-                openEndDrawer()
+                toggleEndDrawer()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -567,7 +713,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     }
 
-    private fun openEndDrawer() {
+    private fun toggleEndDrawer() {
         if (binding.mainDrawer.isDrawerOpen(GravityCompat.END)) {
             binding.mainDrawer.closeDrawer(GravityCompat.END)
         } else {
@@ -575,7 +721,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
     }
 
-    private fun openStartDrawer() {
+    private fun toggleStartDrawer() {
         if (binding.mainDrawer.isDrawerOpen(GravityCompat.START)) {
             binding.mainDrawer.closeDrawer(GravityCompat.START)
         } else {
@@ -1194,21 +1340,15 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         val overrideConfig = intent.getBooleanExtra(Config.EXTRA_OVERRIDE_CONFIG, false)
         val savedConfig = AppUtil.getSavedConfig(this)
 
-        if (savedInstanceState != null) {
-            config = savedConfig
-
+        config = if (savedInstanceState != null) {
+            savedConfig
         } else if (savedConfig == null) {
-            if (intentConfig == null) {
-                config = Config()
-            } else {
-                config = intentConfig
-            }
-
+            intentConfig ?: Config()
         } else {
             if (intentConfig != null && overrideConfig) {
-                config = intentConfig
+                intentConfig
             } else {
-                config = savedConfig
+                savedConfig
             }
         }
 
@@ -1218,7 +1358,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             config = Config()
 
         AppUtil.saveConfig(this, config)
-        direction = config.direction
+        direction = savedConfig?.direction ?: Config.Direction.VERTICAL
     }
 
     override fun play() {
@@ -1290,6 +1430,25 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         val tocLinkWrapper = mTOCAdapter.getItemAt(position) as TOCLinkWrapper
         if (tocLinkWrapper.children != null && tocLinkWrapper.children.size > 0) {
             mTOCAdapter.toggleGroup(position)
+        }
+    }
+
+    private val autoScrollHandler = Handler(Looper.getMainLooper())
+    private fun observeAutoScrollingSetting() {
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isAutoScroll) {
+            autoScrollHandler.postDelayed({
+                val folioPageFragment =
+                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
+                if (folioPageFragment != null) {
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
+                    if (!folioPageFragment.scrollToNext()) {
+                        binding.folioPageViewPager.currentItem =
+                            binding.folioPageViewPager.currentItem + 1
+                    }
+                    observeAutoScrollingSetting()
+                }
+            }, config.intervalAutoScroll * 1000L)
         }
     }
 }

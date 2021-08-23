@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center"
+        tools:visibility="visible"
         android:orientation="horizontal"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"

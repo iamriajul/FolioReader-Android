@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -64,7 +64,7 @@
         <item name="android:windowExitAnimation">@anim/disappear</item>
     </style>
 
-    <style name="full_screen_dialog" parent="@style/Theme.AppCompat">
+    <style name="full_screen_dialog" parent="@style/Theme.MaterialComponents">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -109,7 +109,7 @@
         <item name="android:textColor">?defaultFontColor</item>
     </style>
 
-    <style name="ActionBarDayStyle" parent="@style/Widget.AppCompat.ActionBar.Solid">
+    <style name="ActionBarDayStyle" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
         <item name="titleTextStyle">@style/ActionBarDayTitleTextStyle</item>
     </style>
 
@@ -117,19 +117,23 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="ActionBarNightStyle" parent="@style/Widget.AppCompat.ActionBar.Solid">
+    <style name="ActionBarNightStyle" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
         <item name="background">@color/black</item>
     </style>
 
-    <style name="ToolbarStyle" parent="@style/Widget.AppCompat.Toolbar">
+    <style name="ToolbarStyle" parent="@style/Widget.MaterialComponents.Toolbar">
         <item name="android:paddingRight">4dp</item>
         <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">4dp</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
     </style>
 
+    <style name="ThemeOverlay.PrimaryPalette.Red" parent="">
+        <item name="colorPrimary">#e53935</item>
+        <item name="colorPrimaryDark">#ab000d</item>
+    </style>
 
     <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
