@@ -16,6 +16,9 @@
 package com.folioreader.ui.activity
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.BroadcastReceiver
@@ -124,6 +127,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private var density: Float = 0.toFloat()
     private var topActivity: Boolean? = null
     private var taskImportance: Int = 0
+
+    private var isNightMode = false
 
     private lateinit var mTOCAdapter: TOCAdapter
 
@@ -359,6 +364,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         configFonts()
         setupSwipeObserver()
+
+        isNightMode = config.isNightMode
+
     }
 
 
@@ -403,6 +411,65 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
     }
 
+
+    private fun toggleBlackTheme() {
+
+        val day = ContextCompat.getColor(applicationContext, R.color.white)
+        val night = ContextCompat.getColor(applicationContext, R.color.night)
+
+        val colorAnimation = ValueAnimator.ofObject(
+            ArgbEvaluator(),
+            if (isNightMode) night else day, if (isNightMode) day else night
+        )
+        colorAnimation.duration = ConfigBottomSheetDialogFragment.FADE_DAY_NIGHT_MODE.toLong()
+
+        colorAnimation.addUpdateListener { animator ->
+            val value = animator.animatedValue as Int
+        }
+
+        colorAnimation.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animator: Animator) {}
+
+            override fun onAnimationEnd(animator: Animator) {
+                isNightMode = !isNightMode
+                config.isNightMode = isNightMode
+                AppUtil.saveConfig(applicationContext, config)
+                EventBus.getDefault().post(ReloadDataEvent())
+            }
+
+            override fun onAnimationCancel(animator: Animator) {}
+
+            override fun onAnimationRepeat(animator: Animator) {}
+        })
+
+        colorAnimation.duration = ConfigBottomSheetDialogFragment.FADE_DAY_NIGHT_MODE.toLong()
+
+        val attrs = intArrayOf(android.R.attr.navigationBarColor)
+        val typedArray = theme?.obtainStyledAttributes(attrs)
+        val defaultNavigationBarColor = typedArray?.getColor(
+            0,
+            ContextCompat.getColor(applicationContext, R.color.white)
+        )
+        val black = ContextCompat.getColor(applicationContext, R.color.black)
+
+        val navigationColorAnim = ValueAnimator.ofObject(
+            ArgbEvaluator(),
+            if (isNightMode) black else defaultNavigationBarColor,
+            if (isNightMode) defaultNavigationBarColor else black
+        )
+
+        navigationColorAnim.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            window?.navigationBarColor = value
+        }
+
+        navigationColorAnim.duration = ConfigBottomSheetDialogFragment.FADE_DAY_NIGHT_MODE.toLong()
+        navigationColorAnim.start()
+
+        colorAnimation.start()
+    }
+
+
     private fun getCheckedButtonId(font: Int): Int {
         return when (font) {
             FONT_TIMES -> binding.fontFamily.btnTimes.id
@@ -427,32 +494,34 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     }
 
     private fun setupListeners() {
-        /*binding.bottomMenus.btnChapters.setOnClickListener {
-            clearMenuItemChecked()
-            toggleStartDrawer()
+
+        binding.brightness.cvWhite.setOnClickListener {
+            isNightMode = true
+            toggleBlackTheme()
+//            setToolBarColor()
+//            setAudioPlayerBackground()
+            UiUtil.setColorResToDrawable(
+                R.color.white,
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_dark_mode)
+            )
+            UiUtil.setColorIntToDrawable(
+                config.themeColor,
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_light_mode)
+            )
         }
 
-        binding.bottomMenus.btnBookmark.setOnClickListener {
-            clearMenuItemChecked()
-            showBookmarkHighlightAndNote()
+        binding.brightness.cvBlack.setOnClickListener {
+            isNightMode = false
+            toggleBlackTheme()
+            UiUtil.setColorResToDrawable(
+                R.color.black,
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_light_mode)
+            )
+            UiUtil.setColorIntToDrawable(
+                config.themeColor,
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_dark_mode)
+            )
         }
-
-        binding.bottomMenus.btnFullScreen.setOnClickListener {
-            hasFullScreen = !hasFullScreen
-            fullScreenMode()
-        }
-
-        binding.bottomMenus.btnBrightness.setOnClickListener {
-            showPageInfoOrOthers(hasBrightNess = true)
-        }
-
-        binding.bottomMenus.btnRotate.setOnClickListener {
-            showPageInfoOrOthers(hasPageInfo = true)
-        }
-
-        binding.bottomMenus.btnFontFamily.setOnClickListener {
-            showPageInfoOrOthers(hasFontFamily = true)
-        }*/
 
         binding.bottomMenus.buttonMenuGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
@@ -1576,7 +1645,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
     }
 
-    private fun setupSwipeObserver(){
+    private fun setupSwipeObserver() {
 
     }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="FolioActivityBrownTheme" parent="Theme.MaterialComponents.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionBarStyle">@style/FolioActivityBrownTheme.ActionBarStyle</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
+    </style>
+
+    <style name="FolioActivityBrownTheme.ActionBarStyle" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
+        <item name="titleTextStyle">@style/FolioActivityBrownTheme.ActionBarStyle.TitleTextStyle
+        </item>
+    </style>
+
+    <style name="FolioActivityBrownTheme.ActionBarStyle.TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- FolioBrownTheme -->
+
+    <color name="brown_background_color">#FFE6BB</color>
+    <color name="brown_popup_window_background">#FFE6BB</color>
+    <color name="brown_default_font_color">#000000</color>
+    <color name="brown_highlight_delete_fill_color">#333333</color>
+    <color name="brown_underline_icon_fill_color_top">#333333</color>
+    <color name="brown_scroll_bar_color">#44000000</color>
+
+    <style name="FolioBrownTheme" parent="Theme.MaterialComponents.Light">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">#FFE6BB</item>
+        <item name="colorPrimaryDark">#FFE6BB</item>
+        <item name="android:colorBackground">@color/brown_background_color</item>
+        <item name="colorAccent">@color/default_theme_accent_color</item>
+        <item name="actionBarStyle">@style/ActionBarDayStyle</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
+
+        <item name="defaultFontColor">@color/brown_default_font_color</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="searchItemHeaderBackgroundColor">#DDDDDD</item>
+        <item name="dividerColor">#000000</item>
+
+        <item name="popUpWindowBackground">@color/brown_popup_window_background</item>
+        <item name="highlightDeleteFillColor">@color/brown_highlight_delete_fill_color</item>
+        <item name="underlineIconFillColorTop">@color/brown_underline_icon_fill_color_top</item>
+
+        <item name="scrollBarColor">@color/brown_scroll_bar_color</item>
+
+    </style>
+
+</resources>
