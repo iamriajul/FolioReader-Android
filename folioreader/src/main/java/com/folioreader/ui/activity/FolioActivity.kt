@@ -358,6 +358,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         updateFontSize()
 
         configFonts()
+        setupSwipeObserver()
     }
 
 
@@ -1280,7 +1281,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     override fun onDestroy() {
         super.onDestroy()
-
         if (outState != null)
             outState!!.putSerializable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE, lastReadLocator)
 
@@ -1496,6 +1496,18 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         return direction
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.e(LOG_TAG, "onKeyDown: $keyCode")
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            useVolumeControlForNavigation(false)
+            return false
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            useVolumeControlForNavigation(true)
+            return false
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     private fun clearSearchLocator() {
         Log.v(LOG_TAG, "-> clearSearchLocator")
 
@@ -1528,6 +1540,23 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
     }
 
+
+    private fun useVolumeControlForNavigation(isNext: Boolean) {
+        val config = AppUtil.getSavedConfig(this)
+        if (!config.isUseVolumeForControlNavigation) return
+        val currentPosition = binding.folioPageViewPager.currentItem
+        Log.d(LOG_TAG, "useVolumeControlForNavigation: $currentPosition")
+        if (isNext) {
+            if (currentPosition >= 0 && currentPosition < mFolioPageFragmentAdapter?.count ?: 0) {
+                binding.folioPageViewPager.currentItem = currentPosition + 1
+            }
+        } else {
+            if (currentPosition > 0) {
+                binding.folioPageViewPager.currentItem = currentPosition - 1
+            }
+        }
+    }
+
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private fun observeAutoScrollingSetting() {
         val config = AppUtil.getSavedConfig(this)
@@ -1545,5 +1574,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 }
             }, config.intervalAutoScroll * 1000L)
         }
+    }
+
+    private fun setupSwipeObserver(){
+
     }
 }
