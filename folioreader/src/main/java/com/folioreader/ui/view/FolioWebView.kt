@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.MotionEventCompat
 import com.folioreader.Config
 import com.folioreader.Constants
 import com.folioreader.R
@@ -43,6 +44,7 @@ import org.springframework.util.ReflectionUtils
 import java.lang.Exception
 import java.lang.ref.WeakReference
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * @author by mahavir on 3/31/16.
@@ -84,6 +86,7 @@ class FolioWebView : WebView {
     private var density: Float = 0.toFloat()
     private var mScrollListener: ScrollListener? = null
     private var mSeekBarListener: SeekBarListener? = null
+    private var onBrightnessChangeListner: ((distanc: Float) -> Unit)? = null
     private lateinit var gestureDetector: GestureDetectorCompat
     private var eventActionDown: MotionEvent? = null
     private var pageWidthCssDp: Int = 0
@@ -161,14 +164,23 @@ class FolioWebView : WebView {
         private val SWIPE_VELOCITY_THRESHOLD = 100
 
         override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             distanceX: Float,
             distanceY: Float
         ): Boolean {
 //            Log.d(LOG_TAG, "-> onScroll -> e1 = $e1, e2 = $e2, distanceX = $distanceX, distanceY = $distanceY")
             lastScrollType = LastScrollType.USER
             try {
+                val distanceCovered = getDistance(e1.x, e1.y, e1)
+                changeBrightness(
+                    e1.getHistoricalX(0, 0),
+                    e1.getHistoricalY(0, 0),
+                    e1.x,
+                    e1.y,
+                    distanceCovered
+                )
+
                 val diffY = e2!!.y - e1!!.y
                 val diffX = e2.x - e1.x
                 if (abs(diffX) > abs(diffY)) {
@@ -176,6 +188,7 @@ class FolioWebView : WebView {
                         if (diffX > 0) {
                             Log.d(LOG_TAG, "onScroll: swipe right")
 //                            onSwipeRight()
+
                         } else {
 //                            onSwipeLeft()
                             Log.d(LOG_TAG, "onScroll: swipe left")
@@ -221,6 +234,8 @@ class FolioWebView : WebView {
             super@FolioWebView.onTouchEvent(event)
             return true
         }
+
+
     }
 
     @JavascriptInterface
@@ -251,25 +266,35 @@ class FolioWebView : WebView {
         private val SWIPE_THRESHOLD = 10
         private val SWIPE_VELOCITY_THRESHOLD = 10
 
+        override fun onShowPress(e: MotionEvent?) {
+            Log.d(LOG_TAG, "onShowPress: ")
+            super.onShowPress(e)
+        }
+
         override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             distanceX: Float,
             distanceY: Float
         ): Boolean {
 //            Log.v(LOG_TAG, "-> onScroll -> e1 = " + e1 + ", e2 = " + e2 + ", distanceX = " + distanceX + ", distanceY = " + distanceY);
             lastScrollType = LastScrollType.USER
             try {
-                val diffY = e2!!.y - e1!!.y
+                val diffY = e2.y - e1.y
                 val diffX = e2.x - e1.x
                 if (abs(diffX) > abs(diffY)) {
                     if (abs(diffX) > SWIPE_THRESHOLD && abs(distanceX) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffX > 0) {
                             Log.d(LOG_TAG, "onScroll: swipe right $diffX $diffY")
+                            val distance =
+                                sqrt((e2.x - e1.x) * (e2.x - e1.x) + (e2.y - e1.y) * (e2.y - e1.y))
+//                            Log.d(LOG_TAG, "onScroll: swipe right distance ${distance / 60}")
+
 //                            onSwipeRight()
+
                         } else {
 //                            onSwipeLeft()
-                            Log.d(LOG_TAG, "onScroll: swipe left $diffX $diffY")
+//                            Log.d(LOG_TAG, "onScroll: swipe left $diffX $diffY")
                         }
                         return true
                     }
@@ -293,27 +318,39 @@ class FolioWebView : WebView {
         }
     }
 
-    fun changeBrightness(X: Float, Y: Float, x: Float, y: Float, distance: Float, type: String) {
-        var newDistance = distance
-        if (type === "Y" && x == X) {
-            newDistance /= 270
-            if (y < Y) {
-                commonBrightness(newDistance)
-            } else {
-                commonBrightness(-newDistance)
-            }
-        } else if (type === "X" && y == Y) {
-            newDistance /= 160
+    fun getDistance(x: Float, y: Float, ev: MotionEvent): Float {
+        var startX = x
+        var startY = y
+        var distanceSum = 0f
+        val historySize = ev.historySize
+        for (h in 0 until historySize) {
+            val hx = ev.getHistoricalX(0, h)
+            val hy = ev.getHistoricalY(0, h)
+            val dx = hx - startX
+            val dy = hy - startY
+            distanceSum += Math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+            startX = hx
+            startY = hy
+        }
+        val dx = ev.getX(0) - startX
+        val dy = ev.getY(0) - startY
+        distanceSum += Math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+        return distanceSum
+    }
+
+    fun changeBrightness(X: Float, Y: Float, x: Float, y: Float, distance: Float) {
+        if (y == Y) {
             if (x > X) {
-                commonBrightness(newDistance)
+                commonBrightness(distance / 160)
             } else {
-                commonBrightness(-newDistance)
+                commonBrightness(-(distance / 160))
             }
         }
     }
 
-    fun commonBrightness(distance: Float) {
+    private fun commonBrightness(distance: Float) {
         Log.e(LOG_TAG, "commonBrightness: $distance")
+        onBrightnessChangeListner?.invoke(distance)
     }
 
     constructor(context: Context) : super(context)
@@ -487,6 +524,10 @@ class FolioWebView : WebView {
         mSeekBarListener = listener
     }
 
+    fun addBrightnessChangedListener(listener: (distance: Float) -> Unit) {
+        this.onBrightnessChangeListner = listener
+    }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null)
             return false
@@ -494,6 +535,21 @@ class FolioWebView : WebView {
 
         lastTouchAction = event.action
 
+        if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_MOVE) {
+            val x: Float = event.getX()
+            val y: Float = event.getY()
+            val distanceCovered = getDistance(x, y, event)
+            if (event.historySize > 0 && folioActivityCallback.direction == Config.Direction.VERTICAL) {
+                changeBrightness(
+                    event.getHistoricalX(0, 0),
+                    event.getHistoricalY(0, 0),
+                    x,
+                    y,
+                    distanceCovered
+                )
+            }
+
+        }
         return if (folioActivityCallback.direction == Config.Direction.HORIZONTAL) {
             computeHorizontalScroll(event)
         } else {

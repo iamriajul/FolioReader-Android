@@ -72,6 +72,7 @@ import org.readium.r2.streamer.parser.EpubParser
 import org.readium.r2.streamer.parser.PubBox
 import org.readium.r2.streamer.server.Server
 import java.lang.ref.WeakReference
+import kotlin.math.log
 
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
     View.OnSystemUiVisibilityChangeListener {
@@ -297,6 +298,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         observeAutoScrollingSetting()
         setupSwipeObserver()
+        setupDimInterval()
+        Log.d(LOG_TAG, "onCreate: screenBrightNess ${window.attributes.screenBrightness}")
     }
 
     private fun initActionBar() {
@@ -349,6 +352,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         )
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.d(LOG_TAG, "onTouchEvent: ")
+        return super.onTouchEvent(event)
+    }
     private fun initMediaController() {
         Log.v(LOG_TAG, "-> initMediaController")
 
@@ -1289,7 +1296,59 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
     }
 
-    private fun setupSwipeObserver(){
+    private fun setupSwipeObserver() {
 
+    }
+
+    private val runnable = {
+        toggleDim()
+    }
+    private val dimObserverHandler = Handler(Looper.getMainLooper())
+    private var dimEnable = false
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isDimOnInactive) {
+            if (dimEnable) {
+                toggleDim()
+            }
+            dimObserverHandler.removeCallbacks(runnable)
+            dimObserverHandler.postDelayed(
+                runnable, config.dimOnInactiveTime
+                        * 60
+                        * 1000L
+            )
+            Log.d(LOG_TAG, "onUserInteraction: ")
+        }
+    }
+
+    private fun setupDimInterval() {
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isDimOnInactive) {
+            dimObserverHandler.postDelayed(
+                runnable, config.dimOnInactiveTime
+                        * 60
+                        * 1000L
+            )
+        }
+    }
+
+    private fun toggleDim() {
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isDimOnInactive) {
+            val layoutParams = window.attributes
+            val alpha = layoutParams.alpha
+            if (alpha == 1.0f) {
+                layoutParams.alpha = 0.2f
+                window.attributes = layoutParams
+                dimEnable = true
+                Log.d(LOG_TAG, "toggleDim: true")
+            } else {
+                layoutParams.alpha = 1.0f
+                window.attributes = layoutParams
+                dimEnable = false
+                Log.d(LOG_TAG, "toggleDim: false")
+            }
+        }
     }
 }
