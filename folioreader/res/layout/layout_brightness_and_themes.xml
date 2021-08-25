@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/tvCurrentBrightness"
             android:layout_toEndOf="@+id/ivBrightness"
-            android:max="100"
+            android:max="255"
             android:progress="75"
             android:progressBackgroundTint="#FFFFFF"
             android:progressTint="#17CE3C"

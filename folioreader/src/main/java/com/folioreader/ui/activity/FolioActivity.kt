@@ -86,6 +86,9 @@ import org.readium.r2.streamer.parser.PubBox
 import org.readium.r2.streamer.server.Server
 import java.lang.ref.WeakReference
 import java.util.ArrayList
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+
 
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
     View.OnSystemUiVisibilityChangeListener, TOCCallback {
@@ -367,6 +370,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         isNightMode = config.isNightMode
 
+        val layoutParams = window.attributes // Get Params
+        layoutParams.screenBrightness = (binding.brightness.sbBrightness.progress / 255f) // Set Value
+        window.attributes = layoutParams
+
     }
 
 
@@ -553,6 +560,24 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             }
         }
 
+
+        binding.brightness.sbBrightness.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+//                config.currentBrightness = progress
+//                AppUtil.saveConfig(applicationContext, config)
+//                EventBus.getDefault().post(ReloadDataEvent())
+                val layoutParams = window.attributes // Get Params
+                layoutParams.screenBrightness = (progress / 255f) // Set Value
+                window.attributes = layoutParams
+
+                binding.brightness.tvCurrentBrightness.text = progress.toString()
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
 
     }
 
