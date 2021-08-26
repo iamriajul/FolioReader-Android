@@ -548,7 +548,7 @@ public class Config extends BaseObservable implements Parcelable {
         return hyphenation;
     }
 
-    @NonNull
+
     @Override
     public String toString() {
         return "Config{" +
@@ -559,6 +559,20 @@ public class Config extends BaseObservable implements Parcelable {
                 ", showTts=" + showTts +
                 ", allowedDirection=" + allowedDirection +
                 ", direction=" + direction +
+                ", autoScroll=" + autoScroll +
+                ", intervalAutoScroll=" + intervalAutoScroll +
+                ", continuousAutoScroll=" + continuousAutoScroll +
+                ", intervalContinuousAutoScroll=" + intervalContinuousAutoScroll +
+                ", wholePageAtATime=" + wholePageAtATime +
+                ", useVolumeForControlNavigation=" + useVolumeForControlNavigation +
+                ", swipeForControlBrightness=" + swipeForControlBrightness +
+                ", lightFilter=" + lightFilter +
+                ", dimOnInactive=" + dimOnInactive +
+                ", dimOnInactiveTime=" + dimOnInactiveTime +
+                ", shakeToTakeScreenShort=" + shakeToTakeScreenShort +
+                ", justifiedAlignment=" + justifiedAlignment +
+                ", lineHeight=" + lineHeight +
+                ", hyphenation=" + hyphenation +
                 '}';
     }
 

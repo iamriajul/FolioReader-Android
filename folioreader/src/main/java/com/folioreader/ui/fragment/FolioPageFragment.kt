@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.webkit.*
@@ -409,7 +410,33 @@ class FolioPageFragment : Fragment(),
                 updatePagesLeftText(percent)
             }
         })
-
+        mWebview?.addBrightnessChangedListener { distance ->
+            Log.e("Swipper", "commonBrightness: $distance")
+            val layout: WindowManager.LayoutParams = requireActivity().getWindow().getAttributes()
+            Log.e("Swipper", "commonBrightness: " + layout.screenBrightness)
+//            if (requireActivity().getWindow()
+//                    .getAttributes().screenBrightness + distance <= 1 && requireActivity().getWindow()
+//                    .getAttributes().screenBrightness + distance >= 0
+//            ) {
+//                customView.show()
+//                if (((getWindow().getAttributes().screenBrightness + distance) * 100) as Int > 100) {
+//                    customView.setProgress(100)
+//                    customView.setProgressText("100")
+//                } else if (((getWindow().getAttributes().screenBrightness + distance) * 100) as Int<0) {
+//                    customView.setProgress(0)
+//                    customView.setProgressText("0")
+//                } else {
+//                    customView.setProgress(((getWindow().getAttributes().screenBrightness + distance) * 100) as Int)
+//                    customView.setProgressText(
+//                        Integer.valueOf(((getWindow().getAttributes().screenBrightness + distance) * 100) as Int)
+//                            .toString() + "%"
+//                    )
+//                }
+                layout.screenBrightness =
+                    requireActivity().getWindow().getAttributes().screenBrightness + distance
+                requireActivity().getWindow().setAttributes(layout)
+//            }
+        }
         mWebview!!.webViewClient = webViewClient
         mWebview!!.webChromeClient = webChromeClient
 
