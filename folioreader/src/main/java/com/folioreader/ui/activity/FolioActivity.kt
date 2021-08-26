@@ -88,6 +88,7 @@ import java.lang.ref.WeakReference
 import java.util.ArrayList
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+import androidx.fragment.app.Fragment
 
 import kotlin.math.log
 
@@ -361,6 +362,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         observeAutoScrollingSetting()
         setupRecyclerViews()
+        initAdapter()
         setupListeners()
         showPageInfoOrOthers(hasPageInfo = true)
 
@@ -368,15 +370,25 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         configFonts()
         setupSwipeObserver()
+        setupBrightnessAndThemes()
+        setupDimInterval()
+        Log.d(LOG_TAG, "onCreate: screenBrightNess ${window.attributes.screenBrightness}")
 
+        updatePageInfo()
+    }
+
+    private fun updatePageInfo() {
+        Log.d(LOG_TAG, "updatePageInfo: ${mFolioPageFragmentAdapter?.count}")
+        Log.d(LOG_TAG, "updatePageInfo: ${spine?.size}")
+    }
+
+    private fun setupBrightnessAndThemes() {
         isNightMode = config.isNightMode
 
         val layoutParams = window.attributes // Get Params
-        layoutParams.screenBrightness = (binding.brightness.sbBrightness.progress / 255f) // Set Value
+        layoutParams.screenBrightness =
+            (binding.brightness.sbBrightness.progress / 255f) // Set Value
         window.attributes = layoutParams
-
-        setupDimInterval()
-        Log.d(LOG_TAG, "onCreate: screenBrightNess ${window.attributes.screenBrightness}")
     }
 
 
@@ -503,13 +515,27 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding.fontFamily.sbFontSize.progress = config.fontSize
     }
 
+    private fun setToolBarColor() {
+        if (isNightMode) {
+            setDayMode()
+        } else {
+            setNightMode()
+        }
+    }
+
+    private fun setAudioPlayerBackground() {
+        if (isNightMode) {
+            mediaControllerFragment?.setDayMode()
+        } else {
+            mediaControllerFragment?.setNightMode()
+        }
+    }
+
     private fun setupListeners() {
 
         binding.brightness.cvWhite.setOnClickListener {
             isNightMode = true
             toggleBlackTheme()
-//            setToolBarColor()
-//            setAudioPlayerBackground()
             UiUtil.setColorResToDrawable(
                 R.color.white,
                 ContextCompat.getDrawable(applicationContext, R.drawable.ic_dark_mode)
@@ -518,6 +544,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 config.themeColor,
                 ContextCompat.getDrawable(applicationContext, R.drawable.ic_light_mode)
             )
+            setToolBarColor()
+            setAudioPlayerBackground()
         }
 
         binding.brightness.cvBlack.setOnClickListener {
@@ -531,6 +559,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 config.themeColor,
                 ContextCompat.getDrawable(applicationContext, R.drawable.ic_dark_mode)
             )
+            setToolBarColor()
+            setAudioPlayerBackground()
         }
 
         binding.bottomMenus.buttonMenuGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -684,18 +714,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun setDayMode() {
         Log.v(LOG_TAG, "-> setDayMode")
 
-        binding.toolbar.setBackgroundDrawable(
-            ColorDrawable(ContextCompat.getColor(this, R.color.white))
-        )
+        binding.toolbar.background = ColorDrawable(ContextCompat.getColor(this, R.color.white))
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
     override fun setNightMode() {
-        Log.v(LOG_TAG, "-> setNightMode")
-
-        binding.toolbar.setBackgroundDrawable(
-            ColorDrawable(ContextCompat.getColor(this, R.color.black))
-        )
+        binding.toolbar.background = ColorDrawable(ContextCompat.getColor(this, R.color.black))
         binding.toolbar.setTitleTextColor(
             ContextCompat.getColor(
                 this,
@@ -704,13 +728,25 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         )
     }
 
+    override fun updatePages(currentPages: Int, totalPages: Int) {
+        binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
+
+
+        Log.d(LOG_TAG, "updatePages: ${spine?.size}")
+        Log.d(LOG_TAG, "updatePages: ${pubBox?.publication?.tableOfContents?.size}")
+
+
+
+//        val chapterName = pubBox?.publication?.tableOfContents?.get(currentChapterIndex)?.title ?: return
+//        binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
+    }
+
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d(LOG_TAG, "onTouchEvent: ")
         return super.onTouchEvent(event)
     }
-    private fun initMediaController() {
-        Log.v(LOG_TAG, "-> initMediaController")
 
+    private fun initMediaController() {
         mediaControllerFragment = MediaControllerFragment.getInstance(supportFragmentManager, this)
     }
 
@@ -929,7 +965,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             binding.mainDrawer.closeDrawer(GravityCompat.START)
         } else {
             binding.mainDrawer.openDrawer(GravityCompat.START)
-            initAdapter()
+//            initAdapter()
         }
     }
 

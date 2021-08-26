@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/pages_format"
         android:textColor="@color/white"
         android:textSize="18sp"
         tools:text="Pages 1 of 23" />
@@ -23,7 +22,6 @@
         android:layout_below="@+id/tvPages"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="2dp"
-        android:text="@string/chapter_name_format"
         android:textColor="#D7CCC8"
         tools:text="(This Chapter)" />
 

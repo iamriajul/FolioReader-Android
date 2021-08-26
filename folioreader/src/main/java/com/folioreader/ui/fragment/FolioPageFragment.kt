@@ -131,6 +131,9 @@ class FolioPageFragment : Fragment(),
     val pageName: String
         get() = mBookTitle + "$" + spineItem.href
 
+    val chapterName: String
+        get() = spineItem.title ?: ""
+
     private val isCurrentFragment: Boolean
         get() {
             return isAdded && mActivityCallback!!.currentChapterIndex == spineIndex
@@ -697,7 +700,7 @@ class FolioPageFragment : Fragment(),
 
     private fun setupScrollBar() {
         UiUtil.setColorIntToDrawable(mConfig!!.themeColor, mScrollSeekbar!!.progressDrawable)
-        val thumbDrawable = ContextCompat.getDrawable(activity!!, R.drawable.icons_sroll)
+        val thumbDrawable = ContextCompat.getDrawable(requireActivity(), R.drawable.icons_sroll)
         UiUtil.setColorIntToDrawable(mConfig!!.themeColor, thumbDrawable!!)
         mScrollSeekbar!!.thumb = thumbDrawable
     }
@@ -728,6 +731,7 @@ class FolioPageFragment : Fragment(),
             val currentPage = (Math.ceil(scrollY.toDouble() / mWebview!!.webViewHeight) + 1).toInt()
             val totalPages =
                 Math.ceil(mWebview!!.contentHeightVal.toDouble() / mWebview!!.webViewHeight).toInt()
+            mActivityCallback?.updatePages(currentPage, totalPages);
             val pagesRemaining = totalPages - currentPage
             val pagesRemainingStrFormat = if (pagesRemaining > 1)
                 getString(R.string.pages_left)
@@ -859,7 +863,7 @@ class FolioPageFragment : Fragment(),
     fun onReceiveHighlights(html: String?) {
         if (html != null) {
             rangy = HighlightUtil.createHighlightRangy(
-                activity!!.applicationContext,
+                requireActivity().applicationContext,
                 html,
                 mBookId,
                 pageName,
@@ -883,13 +887,13 @@ class FolioPageFragment : Fragment(),
             val highlightImpl = HighLightTable.updateHighlightStyle(id, style)
             if (highlightImpl != null) {
                 HighlightUtil.sendHighlightBroadcastEvent(
-                    activity!!.applicationContext,
+                    requireActivity().applicationContext,
                     highlightImpl,
                     HighLight.HighLightAction.MODIFY
                 )
             }
             val rangyString = HighlightUtil.generateRangyString(pageName)
-            activity!!.runOnUiThread { loadRangy(rangyString) }
+            requireActivity().runOnUiThread { loadRangy(rangyString) }
 
         }
     }
@@ -900,7 +904,7 @@ class FolioPageFragment : Fragment(),
         if (isCurrentFragment) {
             if (outState != null)
                 outState!!.putSerializable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE, lastReadLocator)
-            if (activity != null && !activity!!.isFinishing && lastReadLocator != null)
+            if (activity != null && !requireActivity().isFinishing && lastReadLocator != null)
                 mActivityCallback!!.storeLastReadLocator(lastReadLocator)
         }
         if (mWebview != null) mWebview!!.destroy()
