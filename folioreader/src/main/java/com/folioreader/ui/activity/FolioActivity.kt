@@ -716,6 +716,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         binding.toolbar.background = ColorDrawable(ContextCompat.getColor(this, R.color.white))
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
+
+        binding.llChapters.background = ColorDrawable(ContextCompat.getColor(this, R.color.white))
+        binding.chapterTitleTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
     override fun setNightMode() {
@@ -726,15 +729,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 R.color.night_title_text_color
             )
         )
+
+        binding.llChapters.background = ColorDrawable(ContextCompat.getColor(this, R.color.black))
+        binding.chapterTitleTextView.setTextColor(ContextCompat.getColor(this, R.color.white))
     }
 
     override fun updatePages(currentPages: Int, totalPages: Int) {
         binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
 
 
-        Log.d(LOG_TAG, "updatePages: ${spine?.size}")
-        Log.d(LOG_TAG, "updatePages: ${pubBox?.publication?.tableOfContents?.size}")
-
+        Log.d(LOG_TAG, "updatePages: ${pubBox?.publication?.tableOfContents?.get(getCurrentChapterIndex())?.title}")
 
 
 //        val chapterName = pubBox?.publication?.tableOfContents?.get(currentChapterIndex)?.title ?: return
@@ -1052,6 +1056,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 null
             }
         }
+
+
 
         portNumber =
             intent.getIntExtra(FolioReader.EXTRA_PORT_NUMBER, Constants.DEFAULT_PORT_NUMBER)
@@ -1448,6 +1454,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
+                Log.v(LOG_TAG, "-> onPageSelected -> DirectionalViewpager -> position = $position")
             }
 
             override fun onPageSelected(position: Int) {
@@ -1467,7 +1474,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 if (state == DirectionalViewpager.SCROLL_STATE_IDLE) {
                     val position = binding.folioPageViewPager.currentItem
                     Log.v(
-                        LOG_TAG, "-> onPageScrollStateChanged -> DirectionalViewpager -> " +
+                        LOG_TAG, "-> onPageSelected  onPageScrollStateChanged -> DirectionalViewpager -> " +
                                 "position = " + position
                     )
 

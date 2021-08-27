@@ -155,6 +155,7 @@ class FolioPageFragment : Fragment(),
         spineIndex = requireArguments().getInt(BUNDLE_SPINE_INDEX)
         mBookTitle = requireArguments().getString(BUNDLE_BOOK_TITLE)
         spineItem = requireArguments().getSerializable(BUNDLE_SPINE_ITEM) as Link
+        Log.d(LOG_TAG, "onCreateView: ${spineItem?.toJSON()}")
         mBookId = requireArguments().getString(FolioReader.EXTRA_BOOK_ID)
 
         chapterUrl = Uri.parse(mActivityCallback?.streamerUrl + spineItem.href!!.substring(1))
