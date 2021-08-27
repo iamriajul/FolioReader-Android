@@ -362,7 +362,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         observeAutoScrollingSetting()
         setupRecyclerViews()
-        initAdapter()
+
         setupListeners()
         showPageInfoOrOthers(hasPageInfo = true)
 
@@ -454,6 +454,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
             override fun onAnimationEnd(animator: Animator) {
                 isNightMode = !isNightMode
+                updateThemes()
                 config.isNightMode = isNightMode
                 AppUtil.saveConfig(applicationContext, config)
                 EventBus.getDefault().post(ReloadDataEvent())
@@ -515,14 +516,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding.fontFamily.sbFontSize.progress = config.fontSize
     }
 
-    private fun setToolBarColor() {
-        if (isNightMode) {
-            setDayMode()
-        } else {
-            setNightMode()
-        }
-    }
-
     private fun setAudioPlayerBackground() {
         if (isNightMode) {
             mediaControllerFragment?.setDayMode()
@@ -544,7 +537,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 config.themeColor,
                 ContextCompat.getDrawable(applicationContext, R.drawable.ic_light_mode)
             )
-            setToolBarColor()
+//            updateThemes()
             setAudioPlayerBackground()
         }
 
@@ -559,7 +552,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 config.themeColor,
                 ContextCompat.getDrawable(applicationContext, R.drawable.ic_dark_mode)
             )
-            setToolBarColor()
             setAudioPlayerBackground()
         }
 
@@ -689,18 +681,18 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         setSupportActionBar(binding.toolbar)
 
         config = AppUtil.getSavedConfig(applicationContext)
+        isNightMode = config.isNightMode
 
 //        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
 //        UiUtil.setColorIntToDrawable(config.themeColor, drawable!!)
 //        binding.toolbar.navigationIcon = drawable
 
-        if (config.isNightMode) {
-            setNightMode()
-        } else {
-            setDayMode()
-        }
+        updateThemes()
 
-        val color = if (config.isNightMode) {
+    }
+
+    private fun updateThemes(){
+        val color = if (isNightMode) {
             ContextCompat.getColor(this, R.color.black)
         } else {
             val attrs = intArrayOf(android.R.attr.navigationBarColor)
@@ -709,7 +701,13 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
         window.navigationBarColor = color
 
+        if (isNightMode) {
+            setNightMode()
+        } else {
+            setDayMode()
+        }
     }
+
 
     override fun setDayMode() {
         Log.v(LOG_TAG, "-> setDayMode")
@@ -737,8 +735,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun updatePages(currentPages: Int, totalPages: Int) {
         binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
 
-
-        Log.d(LOG_TAG, "updatePages: ${pubBox?.publication?.tableOfContents?.get(getCurrentChapterIndex())?.title}")
 
 
 //        val chapterName = pubBox?.publication?.tableOfContents?.get(currentChapterIndex)?.title ?: return
@@ -969,7 +965,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             binding.mainDrawer.closeDrawer(GravityCompat.START)
         } else {
             binding.mainDrawer.openDrawer(GravityCompat.START)
-//            initAdapter()
+            initAdapter()
         }
     }
 
@@ -1445,6 +1441,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         return currentChapterIndex
     }
 
+    private var chapterCounter = 0
+
     private fun configFolio() {
         // Replacing with addOnPageChangeListener(), onPageSelected() is not invoked
         binding.folioPageViewPager.setOnPageChangeListener(object :
@@ -1474,7 +1472,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 if (state == DirectionalViewpager.SCROLL_STATE_IDLE) {
                     val position = binding.folioPageViewPager.currentItem
                     Log.v(
-                        LOG_TAG, "-> onPageSelected  onPageScrollStateChanged -> DirectionalViewpager -> " +
+                        LOG_TAG,
+                        "-> onPageSelected  onPageScrollStateChanged -> DirectionalViewpager -> " +
                                 "position = " + position
                     )
 
@@ -1492,6 +1491,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                         folioPageFragment.scrollToFirst()
                         if (folioPageFragment.mWebview != null)
                             folioPageFragment.mWebview!!.dismissPopupWindow()
+
+                        val chapters = pubBox?.publication?.tableOfContents
+                        if (chapters != null && chapterCounter < chapters.size) {
+                            val chapterName = chapters[chapterCounter++].title
+                            binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
+                        }
                     }
                 }
             }
