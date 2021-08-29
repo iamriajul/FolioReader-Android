@@ -33,6 +33,7 @@ import com.folioreader.ui.base.OnSaveHighlight;
 import com.folioreader.util.AppUtil;
 import com.folioreader.util.OnHighlightListener;
 import com.folioreader.util.ReadLocatorListener;
+import com.swipper.library.Swipper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +42,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity
+public class HomeActivity extends Swipper
         implements OnHighlightListener, ReadLocatorListener, FolioReader.OnClosedListener {
 
     private static final String LOG_TAG = HomeActivity.class.getSimpleName();
@@ -51,7 +52,9 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        Log.d(LOG_TAG, "onCreate: screenBrightNess " + getWindow().getAttributes().screenBrightness);
+        set(this);
+        Brightness(Orientation.HORIZONTAL);
         folioReader = FolioReader.get()
                 .setOnHighlightListener(this)
                 .setReadLocatorListener(this)
