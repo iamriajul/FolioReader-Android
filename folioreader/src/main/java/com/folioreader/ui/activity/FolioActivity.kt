@@ -22,24 +22,30 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import androidx.core.view.drawToBitmap
+import android.os.*
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -65,6 +71,7 @@ import com.folioreader.ui.view.DirectionalViewpager
 import com.folioreader.ui.view.MediaControllerCallback
 import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
+import com.folioreader.util.ScreenShortUtil
 import com.folioreader.util.UiUtil
 import org.greenrobot.eventbus.EventBus
 import org.readium.r2.shared.Link
@@ -73,11 +80,17 @@ import org.readium.r2.streamer.parser.CbzParser
 import org.readium.r2.streamer.parser.EpubParser
 import org.readium.r2.streamer.parser.PubBox
 import org.readium.r2.streamer.server.Server
+import java.io.File
+import java.io.FileOutputStream
 import java.lang.ref.WeakReference
-import kotlin.math.log
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.sqrt
+import java.util.Locale
 
-class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
-    View.OnSystemUiVisibilityChangeListener {
+
+open class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
+    View.OnSystemUiVisibilityChangeListener, SensorEventListener, ScreenShortUtil.OnResultListener {
 
     private var bookFileName: String? = null
 
@@ -114,6 +127,13 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private var density: Float = 0.toFloat()
     private var topActivity: Boolean? = null
     private var taskImportance: Int = 0
+
+    private var sensorManager: SensorManager? = null
+    private var accel = 10f
+    private var accelCurrent = SensorManager.GRAVITY_EARTH
+    private var accelLast = SensorManager.GRAVITY_EARTH
+    private var ssUtils: ScreenShortUtil? = null
+    private var takingSs = false
 
     companion object {
 
@@ -231,6 +251,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             // FolioActivity is topActivity, so need to broadcast ReadLocator.
             finish()
         }
+        sensorManager?.registerListener(
+            this,
+            sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager?.unregisterListener(this)
     }
 
     override fun onStop() {
@@ -259,6 +289,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         // TODO -> Make this configurable
         // getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        val brightness =
+            Settings.System.getFloat(contentResolver, Settings.System.SCREEN_BRIGHTNESS, -1f)
+        val params = window.attributes
+        params.screenBrightness = brightness / 255
+        window.attributes = params
         setConfig(savedInstanceState)
         initDistractionFreeMode(savedInstanceState)
 
@@ -272,12 +307,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         mBookId = intent.getStringExtra(FolioReader.EXTRA_BOOK_ID)
         mEpubSourceType =
-            intent.extras!!.getSerializable(FolioActivity.INTENT_EPUB_SOURCE_TYPE) as EpubSourceType
+            intent.extras!!.getSerializable(INTENT_EPUB_SOURCE_TYPE) as EpubSourceType
         if (mEpubSourceType == EpubSourceType.RAW) {
-            mEpubRawId = intent.extras!!.getInt(FolioActivity.INTENT_EPUB_SOURCE_PATH)
+            mEpubRawId = intent.extras!!.getInt(INTENT_EPUB_SOURCE_PATH)
         } else {
             mEpubFilePath = intent.extras!!
-                .getString(FolioActivity.INTENT_EPUB_SOURCE_PATH)
+                .getString(INTENT_EPUB_SOURCE_PATH)
         }
 
         binding.mainDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -301,7 +336,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         observeAutoScrollingSetting()
         setupSwipeObserver()
         setupDimInterval()
-        Log.d(LOG_TAG, "onCreate: screenBrightNess ${window.attributes.screenBrightness}")
+        setBlueLightFilter()
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        ssUtils = ScreenShortUtil(this)
+        ssUtils?.setCallback(this)
     }
 
     private fun initActionBar() {
@@ -358,6 +396,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         Log.d(LOG_TAG, "onTouchEvent: ")
         return super.onTouchEvent(event)
     }
+
     private fun initMediaController() {
         Log.v(LOG_TAG, "-> initMediaController")
 
@@ -786,8 +825,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         var topDistraction = 0
         if (!distractionFreeMode) {
             topDistraction = statusBarHeight
-            if (actionBar != null)
-                topDistraction += actionBar!!.height
+            if (supportActionBar != null)
+                topDistraction += supportActionBar!!.height
         }
 
         when (unit) {
@@ -887,11 +926,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
         Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
 
-        if (actionBar != null) {
+        if (supportActionBar != null) {
             if (distractionFreeMode) {
-                actionBar!!.hide()
+                supportActionBar!!.hide()
             } else {
-                actionBar!!.show()
+                supportActionBar!!.show()
             }
         }
     }
@@ -1235,9 +1274,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         Log.e(LOG_TAG, "onKeyDown: $keyCode")
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             useVolumeControlForNavigation(false)
-            return false
+            return true
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             useVolumeControlForNavigation(true)
+            return true
+        } else if (keyCode == KeyEvent.META_SYM_ON) {
             return false
         }
         return super.onKeyDown(keyCode, event)
@@ -1327,6 +1368,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private fun setupDimInterval() {
         val config = AppUtil.getSavedConfig(this)
         if (config.isDimOnInactive) {
+            Log.d(LOG_TAG, "setupDimInterval:")
             dimObserverHandler.postDelayed(
                 runnable, config.dimOnInactiveTime
                         * 60
@@ -1353,4 +1395,54 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             }
         }
     }
+
+    private fun setBlueLightFilter() {
+        val config = AppUtil.getSavedConfig(this)
+        val value = config.lightFilter
+        binding.blueLightFilterView.background.alpha = value
+        binding.blueLightFilterView.bringToFront()
+        showBlueLightView()
+    }
+
+    private fun showBlueLightView() {
+        binding.blueLightFilterView.visibility = View.VISIBLE
+    }
+
+    private fun hindBlueLightView() {
+        binding.blueLightFilterView.visibility = View.GONE
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        val x = event.values[0]
+        val y = event.values[1]
+        val z = event.values[2]
+        accelLast = accelCurrent
+        accelCurrent = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+        val delta: Float = accelCurrent - accelLast
+        accel = accel * 0.9f + delta
+        if (accel > 12) {
+            Log.d(LOG_TAG, "onSensorChanged: $accel")
+            takeScreenShort()
+        }
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+
+    }
+
+    private fun takeScreenShort() {
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isShakeToTakeScreenShort && !takingSs) {
+            ssUtils?.takeScreenshot()
+            takingSs = true
+        }
+    }
+
+    override fun result(success: Boolean, filePath: String?, bitmap: Bitmap?) {
+        Log.d(LOG_TAG, "result: success $success")
+        Log.d(LOG_TAG, "result: file $filePath")
+        Log.d(LOG_TAG, "result: bitmap $bitmap")
+        takingSs = false
+    }
+
 }

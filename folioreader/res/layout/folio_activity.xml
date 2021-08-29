@@ -47,6 +47,12 @@
 
             </com.folioreader.ui.view.FolioAppBarLayout>
 
+            <FrameLayout
+                android:id="@+id/blue_light_filter_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/blue_light_filter"
+                android:visibility="gone" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.navigation.NavigationView

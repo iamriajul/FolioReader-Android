@@ -1,6 +1,7 @@
 package com.folioreader.ui.base;
 
 import android.content.Context;
+
 import com.folioreader.Config;
 import com.folioreader.Constants;
 import com.folioreader.R;
@@ -99,6 +100,11 @@ public final class HtmlUtil {
                 break;
             default:
                 break;
+        }
+        if (config.isJustifiedAlignment()) {
+            classes += " alignmentJustify";
+        } else {
+            classes += " alignmentLeft";
         }
 
         htmlContent = htmlContent.replace("<html", "<html class=\"" + classes + "\"" +

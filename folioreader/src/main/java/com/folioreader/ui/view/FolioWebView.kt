@@ -160,9 +160,6 @@ class FolioWebView : WebView {
     }
 
     private inner class HorizontalGestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 100
-        private val SWIPE_VELOCITY_THRESHOLD = 100
-
         override fun onScroll(
             e1: MotionEvent,
             e2: MotionEvent,
@@ -171,34 +168,6 @@ class FolioWebView : WebView {
         ): Boolean {
 //            Log.d(LOG_TAG, "-> onScroll -> e1 = $e1, e2 = $e2, distanceX = $distanceX, distanceY = $distanceY")
             lastScrollType = LastScrollType.USER
-            try {
-                val distanceCovered = getDistance(e1.x, e1.y, e1)
-                changeBrightness(
-                    e1.getHistoricalX(0, 0),
-                    e1.getHistoricalY(0, 0),
-                    e1.x,
-                    e1.y,
-                    distanceCovered
-                )
-
-                val diffY = e2!!.y - e1!!.y
-                val diffX = e2.x - e1.x
-                if (abs(diffX) > abs(diffY)) {
-                    if (abs(diffX) > SWIPE_THRESHOLD && abs(distanceX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            Log.d(LOG_TAG, "onScroll: swipe right")
-//                            onSwipeRight()
-
-                        } else {
-//                            onSwipeLeft()
-                            Log.d(LOG_TAG, "onScroll: swipe left")
-                        }
-                        return true
-                    }
-                }
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-            }
             return false
         }
 
@@ -263,8 +232,6 @@ class FolioWebView : WebView {
     }
 
     private inner class VerticalGestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 10
-        private val SWIPE_VELOCITY_THRESHOLD = 10
 
         override fun onShowPress(e: MotionEvent?) {
             Log.d(LOG_TAG, "onShowPress: ")
@@ -279,29 +246,6 @@ class FolioWebView : WebView {
         ): Boolean {
 //            Log.v(LOG_TAG, "-> onScroll -> e1 = " + e1 + ", e2 = " + e2 + ", distanceX = " + distanceX + ", distanceY = " + distanceY);
             lastScrollType = LastScrollType.USER
-            try {
-                val diffY = e2.y - e1.y
-                val diffX = e2.x - e1.x
-                if (abs(diffX) > abs(diffY)) {
-                    if (abs(diffX) > SWIPE_THRESHOLD && abs(distanceX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            Log.d(LOG_TAG, "onScroll: swipe right $diffX $diffY")
-                            val distance =
-                                sqrt((e2.x - e1.x) * (e2.x - e1.x) + (e2.y - e1.y) * (e2.y - e1.y))
-//                            Log.d(LOG_TAG, "onScroll: swipe right distance ${distance / 60}")
-
-//                            onSwipeRight()
-
-                        } else {
-//                            onSwipeLeft()
-//                            Log.d(LOG_TAG, "onScroll: swipe left $diffX $diffY")
-                        }
-                        return true
-                    }
-                }
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-            }
             return false
         }
 

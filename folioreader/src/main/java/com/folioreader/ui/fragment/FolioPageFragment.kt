@@ -411,31 +411,13 @@ class FolioPageFragment : Fragment(),
             }
         })
         mWebview?.addBrightnessChangedListener { distance ->
-            Log.e("Swipper", "commonBrightness: $distance")
-            val layout: WindowManager.LayoutParams = requireActivity().getWindow().getAttributes()
-            Log.e("Swipper", "commonBrightness: " + layout.screenBrightness)
-//            if (requireActivity().getWindow()
-//                    .getAttributes().screenBrightness + distance <= 1 && requireActivity().getWindow()
-//                    .getAttributes().screenBrightness + distance >= 0
-//            ) {
-//                customView.show()
-//                if (((getWindow().getAttributes().screenBrightness + distance) * 100) as Int > 100) {
-//                    customView.setProgress(100)
-//                    customView.setProgressText("100")
-//                } else if (((getWindow().getAttributes().screenBrightness + distance) * 100) as Int<0) {
-//                    customView.setProgress(0)
-//                    customView.setProgressText("0")
-//                } else {
-//                    customView.setProgress(((getWindow().getAttributes().screenBrightness + distance) * 100) as Int)
-//                    customView.setProgressText(
-//                        Integer.valueOf(((getWindow().getAttributes().screenBrightness + distance) * 100) as Int)
-//                            .toString() + "%"
-//                    )
-//                }
+            val layout: WindowManager.LayoutParams = requireActivity().window.attributes
+            if (requireActivity().window.attributes.screenBrightness + distance in 0.0..1.0
+            ) {
                 layout.screenBrightness =
-                    requireActivity().getWindow().getAttributes().screenBrightness + distance
-                requireActivity().getWindow().setAttributes(layout)
-//            }
+                    requireActivity().window.attributes.screenBrightness + distance
+                requireActivity().window.attributes = layout
+            }
         }
         mWebview!!.webViewClient = webViewClient
         mWebview!!.webChromeClient = webChromeClient
@@ -697,7 +679,7 @@ class FolioPageFragment : Fragment(),
 
     private fun setupScrollBar() {
         UiUtil.setColorIntToDrawable(mConfig!!.themeColor, mScrollSeekbar!!.progressDrawable)
-        val thumbDrawable = ContextCompat.getDrawable(activity!!, R.drawable.icons_sroll)
+        val thumbDrawable = ContextCompat.getDrawable(requireActivity(), R.drawable.icons_sroll)
         UiUtil.setColorIntToDrawable(mConfig!!.themeColor, thumbDrawable!!)
         mScrollSeekbar!!.thumb = thumbDrawable
     }
@@ -859,7 +841,7 @@ class FolioPageFragment : Fragment(),
     fun onReceiveHighlights(html: String?) {
         if (html != null) {
             rangy = HighlightUtil.createHighlightRangy(
-                activity!!.applicationContext,
+                requireActivity().applicationContext,
                 html,
                 mBookId,
                 pageName,
@@ -883,13 +865,13 @@ class FolioPageFragment : Fragment(),
             val highlightImpl = HighLightTable.updateHighlightStyle(id, style)
             if (highlightImpl != null) {
                 HighlightUtil.sendHighlightBroadcastEvent(
-                    activity!!.applicationContext,
+                    requireActivity().applicationContext,
                     highlightImpl,
                     HighLight.HighLightAction.MODIFY
                 )
             }
             val rangyString = HighlightUtil.generateRangyString(pageName)
-            activity!!.runOnUiThread { loadRangy(rangyString) }
+            requireActivity().runOnUiThread { loadRangy(rangyString) }
 
         }
     }
@@ -900,7 +882,7 @@ class FolioPageFragment : Fragment(),
         if (isCurrentFragment) {
             if (outState != null)
                 outState!!.putSerializable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE, lastReadLocator)
-            if (activity != null && !activity!!.isFinishing && lastReadLocator != null)
+            if (activity != null && !requireActivity().isFinishing && lastReadLocator != null)
                 mActivityCallback!!.storeLastReadLocator(lastReadLocator)
         }
         if (mWebview != null) mWebview!!.destroy()
