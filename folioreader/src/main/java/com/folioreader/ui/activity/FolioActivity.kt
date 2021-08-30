@@ -165,6 +165,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
          */
         private fun createTocLinkWrapper(tocLink: Link, indentation: Int): TOCLinkWrapper {
             val tocLinkWrapper = TOCLinkWrapper(tocLink, indentation)
+
             for (tocLink1 in tocLink.children) {
                 val tocLinkWrapper1 = createTocLinkWrapper(tocLink1, indentation + 1)
                 if (tocLinkWrapper1.indentation != 3) {
@@ -646,6 +647,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         val publication = pubBox?.publication
         if (publication != null) {
             if (publication.tableOfContents.isNotEmpty()) {
+
                 val tocLinkWrappers = ArrayList<TOCLinkWrapper>()
                 for (tocLink in publication.tableOfContents) {
                     val tocLinkWrapper = createTocLinkWrapper(tocLink, 0)
@@ -691,7 +693,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     }
 
-    private fun updateThemes(){
+    private fun updateThemes() {
         val color = if (isNightMode) {
             ContextCompat.getColor(this, R.color.black)
         } else {
@@ -734,7 +736,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     override fun updatePages(currentPages: Int, totalPages: Int) {
         binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
-
 
 
 //        val chapterName = pubBox?.publication?.tableOfContents?.get(currentChapterIndex)?.title ?: return
@@ -1444,6 +1445,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private var chapterCounter = 0
 
     private fun configFolio() {
+
         // Replacing with addOnPageChangeListener(), onPageSelected() is not invoked
         binding.folioPageViewPager.setOnPageChangeListener(object :
             DirectionalViewpager.OnPageChangeListener {
@@ -1452,11 +1454,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-                Log.v(LOG_TAG, "-> onPageSelected -> DirectionalViewpager -> position = $position")
+
             }
 
             override fun onPageSelected(position: Int) {
-                Log.v(LOG_TAG, "-> onPageSelected -> DirectionalViewpager -> position = $position")
+                Log.d(LOG_TAG, "-> onPageSelected -> position = $position")
+                Log.d(LOG_TAG, "-> onPageSelected -> href = ${spine!![currentChapterIndex].href}")
 
                 EventBus.getDefault().post(
                     MediaOverlayPlayPauseEvent(
@@ -1465,6 +1468,29 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 )
                 mediaControllerFragment!!.setPlayButtonDrawable()
                 currentChapterIndex = position
+
+                val chapters = pubBox?.publication?.tableOfContents
+                if (chapters != null && chapterCounter < chapters.size) {
+                    var chapterName = chapters[chapterCounter].title
+                    val href = spine!![currentChapterIndex].href
+                    val childrenLink = chapters[chapterCounter].children.firstOrNull {
+                        it.href == href
+                    }
+
+                    if (chapters[chapterCounter].href == href) {
+                        chapterName = chapters[chapterCounter].title
+                    }
+                    if (childrenLink != null) {
+                        chapterName = childrenLink.title
+                    }
+                    if (chapters[chapterCounter].href != href && childrenLink == null) {
+                        chapterCounter++
+                    }
+
+                    binding.pageInfo.tvChapterName.text =
+                        getString(R.string.chapter_name_format, chapterName)
+                }
+
             }
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -1473,7 +1499,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                     val position = binding.folioPageViewPager.currentItem
                     Log.v(
                         LOG_TAG,
-                        "-> onPageSelected  onPageScrollStateChanged -> DirectionalViewpager -> " +
+                        "->  onPageScrollStateChanged -> DirectionalViewpager -> " +
                                 "position = " + position
                     )
 
@@ -1492,11 +1518,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                         if (folioPageFragment.mWebview != null)
                             folioPageFragment.mWebview!!.dismissPopupWindow()
 
-                        val chapters = pubBox?.publication?.tableOfContents
-                        if (chapters != null && chapterCounter < chapters.size) {
-                            val chapterName = chapters[chapterCounter++].title
-                            binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
-                        }
+//                        val chapters = pubBox?.publication?.tableOfContents
+//                        if (chapters != null && chapterCounter < chapters.size) {
+//                            val chapterName = chapters[chapterCounter++].title
+//                            binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
+//                        }
                     }
                 }
             }
@@ -1537,6 +1563,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             searchReceiver,
             IntentFilter(ACTION_SEARCH_CLEAR)
         )
+
+
+        val chapters = pubBox?.publication?.tableOfContents ?: return
+        val chapterName = chapters[chapterCounter++].title
+        binding.pageInfo.tvChapterName.text =
+            getString(R.string.chapter_name_format, chapterName)
     }
 
     private fun getChapterIndex(readLocator: ReadLocator?): Int {
