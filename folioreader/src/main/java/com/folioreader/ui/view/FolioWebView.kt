@@ -657,6 +657,8 @@ class FolioWebView : WebView {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             Log.d(LOG_TAG, "-> onCreateActionMode")
             menu.clear()
+            val inflater: MenuInflater = mode.menuInflater
+            inflater.inflate(R.menu.context_menu, menu)
             return true
         }
 
@@ -705,7 +707,7 @@ class FolioWebView : WebView {
         return actionMode as ActionMode
 
         //Comment above code and uncomment below line for stock text selection
-        //return super.startActionMode(callback)
+//        return super.startActionMode(callback)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -726,7 +728,7 @@ class FolioWebView : WebView {
         return actionMode as ActionMode
 
         //Comment above code and uncomment below line for stock text selection
-        //return super.startActionMode(callback, type)
+//        return super.startActionMode(callback, type)
     }
 
     private fun applyThemeColorToHandles() {

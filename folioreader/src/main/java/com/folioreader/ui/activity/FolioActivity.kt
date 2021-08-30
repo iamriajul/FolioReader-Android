@@ -91,6 +91,10 @@ import android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
 import androidx.fragment.app.Fragment
 
 import kotlin.math.log
+import android.content.pm.ActivityInfo
+
+
+
 
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
     View.OnSystemUiVisibilityChangeListener, TOCCallback {
@@ -101,6 +105,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     //    private var distractionFreeMode: Boolean = false
     private var hasFullScreen: Boolean = false
+    private var hasPortrait = true
     private var handler: Handler? = null
 
     private var currentChapterIndex: Int = 0
@@ -557,32 +562,42 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
 
         binding.bottomMenus.buttonMenuGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                when (checkedId) {
-                    R.id.btnChapters -> {
-                        clearMenuItemChecked()
-                        toggleStartDrawer()
-                    }
-                    R.id.btnBookmark -> {
-                        clearMenuItemChecked()
-                        showBookmarkHighlightAndNote()
-                    }
-                    R.id.btnFullScreen -> {
-                        hasFullScreen = !hasFullScreen
-                        fullScreenMode()
-                    }
-                    R.id.btnBrightness -> {
-                        showPageInfoOrOthers(hasBrightNess = true)
-                    }
-                    R.id.btnRotate -> {
-                        showPageInfoOrOthers(hasPageInfo = true)
-                    }
-                    R.id.btnFontFamily -> {
-                        showPageInfoOrOthers(hasFontFamily = true)
+            if (isChecked) when (checkedId) {
+                R.id.btnChapters -> {
+                    clearMenuItemChecked()
+                    toggleStartDrawer()
+                }
+                R.id.btnBookmark -> {
+                    clearMenuItemChecked()
+                    showBookmarkHighlightAndNote()
+                }
+                R.id.btnFullScreen -> {
+                    hasFullScreen = !hasFullScreen
+                    fullScreenMode()
+                }
+                R.id.btnBrightness -> {
+                    showPageInfoOrOthers(hasBrightNess = true)
+                }
+                R.id.btnRotate -> {
+                    showPageInfoOrOthers(hasPageInfo = true)
+                    hasPortrait = !hasPortrait
+                    requestedOrientation = if(hasPortrait){
+                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    } else {
+                        ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
                     }
                 }
+                R.id.btnFontFamily -> {
+                    showPageInfoOrOthers(hasFontFamily = true)
+                }
             } else {
-                showPageInfoOrOthers(hasPageInfo = true)
+                Log.d(LOG_TAG, "setupListeners: ${checkedId == R.id.btnRotate}")
+                if(checkedId == R.id.btnRotate){
+                    hasPortrait = true
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                } else {
+                    showPageInfoOrOthers(hasPageInfo = true)
+                }
             }
         }
 
