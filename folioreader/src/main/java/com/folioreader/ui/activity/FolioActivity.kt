@@ -365,6 +365,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         }
 
         observeAutoScrollingSetting()
+        continuousAutoScrollingSetting()
         setupRecyclerViews()
 
         setupListeners()
@@ -1741,55 +1742,53 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private fun observeAutoScrollingSetting() {
-//        val config = AppUtil.getSavedConfig(this)
-//        if (config.isAutoScroll) {
-//            autoScrollHandler.postDelayed({
-//                val folioPageFragment =
-//                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
-//                if (folioPageFragment != null) {
-//                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
-//                    if (!folioPageFragment.scrollToNext()) {
-//                        binding.folioPageViewPager.currentItem =
-//                            binding.folioPageViewPager.currentItem + 1
-//                    }
-//                    observeAutoScrollingSetting()
-//                }
-//            }, config.intervalAutoScroll * 1000L)
-//        }
-
-
-        autoScrollHandler.postDelayed({
-
-            val position = binding.folioPageViewPager.currentItem
-
-
-
-            var folioPageFragment =
-                mFolioPageFragmentAdapter!!.getItem(position) as FolioPageFragment?
-            if (folioPageFragment != null) {
-                if(folioPageFragment.continuousScrolling()){
-                    Log.d(LOG_TAG, "observeAutoScrollingSetting: continuousScrolling")
-
-                } else {
-                    folioPageFragment =
-                        mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
-                    if (folioPageFragment != null) {
-                        currentChapterIndex = position + 1
-                        binding.folioPageViewPager.currentItem = currentChapterIndex
-                        folioPageFragment.scrollToFirst()
-                        if (folioPageFragment.mWebview != null)
-                            folioPageFragment.mWebview!!.dismissPopupWindow()
+        val config = AppUtil.getSavedConfig(this)
+        if (config.isAutoScroll) {
+            autoScrollHandler.postDelayed({
+                val folioPageFragment =
+                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
+                if (folioPageFragment != null) {
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
+                    if (!folioPageFragment.scrollToNext()) {
+                        binding.folioPageViewPager.currentItem =
+                            binding.folioPageViewPager.currentItem + 1
                     }
-
-                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ${folioPageFragment == null}")
-
+                    observeAutoScrollingSetting()
                 }
+            }, config.intervalAutoScroll * 1000L)
+        }
+    }
 
-            }
-            observeAutoScrollingSetting()
-        }, 5 * 1000L)
+    private val continuousAutoScrollHandler = Handler(Looper.getMainLooper())
+    private fun continuousAutoScrollingSetting() {
+        val config = AppUtil.getSavedConfig(this)
+        if(config.isContinuousAutoScroll){
+            continuousAutoScrollHandler.postDelayed({
+                val position = binding.folioPageViewPager.currentItem
+                var folioPageFragment =
+                    mFolioPageFragmentAdapter!!.getItem(position) as FolioPageFragment?
+                if (folioPageFragment != null) {
+                    if (folioPageFragment.continuousScrolling()) {
+                        Log.d(LOG_TAG, "observeAutoScrollingSetting: continuousScrolling")
+                    } else {
+                        folioPageFragment =
+                            mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
+                        if (folioPageFragment != null) {
+                            currentChapterIndex = position + 1
+                            binding.folioPageViewPager.currentItem = currentChapterIndex
+                            folioPageFragment.scrollToFirst()
+                            if (folioPageFragment.mWebview != null)
+                                folioPageFragment.mWebview!!.dismissPopupWindow()
+                        }
+                        Log.d(LOG_TAG, "observeAutoScrollingSetting: ${folioPageFragment == null}")
+                    }
+                }
+                continuousAutoScrollingSetting()
+            }, config.intervalContinuousAutoScroll * 1000L)
+        }
 
     }
+
 
     private fun setupSwipeObserver() {
 

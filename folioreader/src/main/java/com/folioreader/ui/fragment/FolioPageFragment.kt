@@ -128,6 +128,8 @@ class FolioPageFragment : Fragment(),
 
     private lateinit var chapterUrl: Uri
 
+    private var scrollingIndex = 40
+
     val pageName: String
         get() = mBookTitle + "$" + spineItem.href
 
@@ -143,6 +145,7 @@ class FolioPageFragment : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+
 
         this.savedInstanceState = savedInstanceState
         uiHandler = Handler(Looper.getMainLooper())
@@ -179,7 +182,6 @@ class FolioPageFragment : Fragment(),
         mMinutesLeftTextView = mRootView!!.findViewById<View>(R.id.minutesLeft) as TextView
 
         mConfig = AppUtil.getSavedConfig(context)
-
         loadingView = mRootView!!.findViewById(R.id.loadingView)
         initSeekbar()
         initAnimations()
@@ -376,6 +378,8 @@ class FolioPageFragment : Fragment(),
         return false
     }
 
+
+
     fun continuousScrolling(): Boolean {
         val isPageLoading = loadingView == null || loadingView!!.visibility == View.VISIBLE
         Log.v(LOG_TAG, "-> scrollToFirst -> isPageLoading = $isPageLoading")
@@ -386,10 +390,10 @@ class FolioPageFragment : Fragment(),
             val nextScroll = (mWebview?.webViewHeight ?: 0) - currentScrollY
             if (nextScroll == 0) {
                 return false
-            } else if (nextScroll in 1..29) {
+            } else if (nextScroll in 1 until scrollingIndex) {
                 mWebview?.scrollBy(0, nextScroll)
             } else {
-                mWebview?.scrollBy(0, 30)
+                mWebview?.scrollBy(0, scrollingIndex)
             }
             return true
         }
