@@ -376,6 +376,27 @@ class FolioPageFragment : Fragment(),
         return false
     }
 
+    fun continuousScrolling(): Boolean {
+        val isPageLoading = loadingView == null || loadingView!!.visibility == View.VISIBLE
+        Log.v(LOG_TAG, "-> scrollToFirst -> isPageLoading = $isPageLoading")
+
+        val canScrollVertically = mWebview?.canScrollVertically(1) ?: false
+        Log.d(LOG_TAG, "continuousScrolling: $canScrollVertically")
+        if (!isPageLoading && canScrollVertically) {
+            val nextScroll = (mWebview?.webViewHeight ?: 0) - currentScrollY
+            if (nextScroll == 0) {
+                return false
+            } else if (nextScroll in 1..29) {
+                mWebview?.scrollBy(0, nextScroll)
+            } else {
+                mWebview?.scrollBy(0, 30)
+            }
+            return true
+        }
+        return false
+    }
+
+
     @SuppressLint("JavascriptInterface", "SetJavaScriptEnabled")
     private fun initWebView() {
 
@@ -436,9 +457,9 @@ class FolioPageFragment : Fragment(),
 //                            .toString() + "%"
 //                    )
 //                }
-                layout.screenBrightness =
-                    requireActivity().getWindow().getAttributes().screenBrightness + distance
-                requireActivity().getWindow().setAttributes(layout)
+            layout.screenBrightness =
+                requireActivity().getWindow().getAttributes().screenBrightness + distance
+            requireActivity().getWindow().setAttributes(layout)
 //            }
         }
         mWebview!!.webViewClient = webViewClient
@@ -727,8 +748,10 @@ class FolioPageFragment : Fragment(),
         }
     }
 
+    private var currentScrollY = 0
     private fun updatePagesLeftText(scrollY: Int) {
         try {
+            currentScrollY = scrollY
             val currentPage = (Math.ceil(scrollY.toDouble() / mWebview!!.webViewHeight) + 1).toInt()
             val totalPages =
                 Math.ceil(mWebview!!.contentHeightVal.toDouble() / mWebview!!.webViewHeight).toInt()

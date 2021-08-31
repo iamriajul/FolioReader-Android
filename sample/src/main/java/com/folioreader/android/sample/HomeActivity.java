@@ -92,7 +92,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         folioReader.setConfig(config, true)
-                .openBook(R.raw.varun);
+                .openBook(R.raw.barrett);
     }
 
     private ReadLocator getLastReadLocator() {

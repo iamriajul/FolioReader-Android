@@ -94,8 +94,6 @@ import kotlin.math.log
 import android.content.pm.ActivityInfo
 
 
-
-
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
     View.OnSystemUiVisibilityChangeListener, TOCCallback {
 
@@ -581,7 +579,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 R.id.btnRotate -> {
                     showPageInfoOrOthers(hasPageInfo = true)
                     hasPortrait = !hasPortrait
-                    requestedOrientation = if(hasPortrait){
+                    requestedOrientation = if (hasPortrait) {
                         ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     } else {
                         ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
@@ -592,7 +590,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 }
             } else {
                 Log.d(LOG_TAG, "setupListeners: ${checkedId == R.id.btnRotate}")
-                if(checkedId == R.id.btnRotate){
+                if (checkedId == R.id.btnRotate) {
                     hasPortrait = true
                     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 } else {
@@ -1512,12 +1510,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
                 if (state == DirectionalViewpager.SCROLL_STATE_IDLE) {
                     val position = binding.folioPageViewPager.currentItem
-                    Log.v(
-                        LOG_TAG,
-                        "->  onPageScrollStateChanged -> DirectionalViewpager -> " +
-                                "position = " + position
-                    )
-
                     var folioPageFragment =
                         mFolioPageFragmentAdapter!!.getItem(position - 1) as FolioPageFragment?
                     if (folioPageFragment != null) {
@@ -1532,12 +1524,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                         folioPageFragment.scrollToFirst()
                         if (folioPageFragment.mWebview != null)
                             folioPageFragment.mWebview!!.dismissPopupWindow()
-
-//                        val chapters = pubBox?.publication?.tableOfContents
-//                        if (chapters != null && chapterCounter < chapters.size) {
-//                            val chapterName = chapters[chapterCounter++].title
-//                            binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
-//                        }
                     }
                 }
             }
@@ -1755,21 +1741,54 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private fun observeAutoScrollingSetting() {
-        val config = AppUtil.getSavedConfig(this)
-        if (config.isAutoScroll) {
-            autoScrollHandler.postDelayed({
-                val folioPageFragment =
-                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
-                if (folioPageFragment != null) {
-                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
-                    if (!folioPageFragment.scrollToNext()) {
-                        binding.folioPageViewPager.currentItem =
-                            binding.folioPageViewPager.currentItem + 1
+//        val config = AppUtil.getSavedConfig(this)
+//        if (config.isAutoScroll) {
+//            autoScrollHandler.postDelayed({
+//                val folioPageFragment =
+//                    mFolioPageFragmentAdapter!!.getItem(binding.folioPageViewPager.currentItem) as FolioPageFragment?
+//                if (folioPageFragment != null) {
+//                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ")
+//                    if (!folioPageFragment.scrollToNext()) {
+//                        binding.folioPageViewPager.currentItem =
+//                            binding.folioPageViewPager.currentItem + 1
+//                    }
+//                    observeAutoScrollingSetting()
+//                }
+//            }, config.intervalAutoScroll * 1000L)
+//        }
+
+
+        autoScrollHandler.postDelayed({
+
+            val position = binding.folioPageViewPager.currentItem
+
+
+
+            var folioPageFragment =
+                mFolioPageFragmentAdapter!!.getItem(position) as FolioPageFragment?
+            if (folioPageFragment != null) {
+                if(folioPageFragment.continuousScrolling()){
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: continuousScrolling")
+
+                } else {
+                    folioPageFragment =
+                        mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
+                    if (folioPageFragment != null) {
+                        currentChapterIndex = position + 1
+                        binding.folioPageViewPager.currentItem = currentChapterIndex
+                        folioPageFragment.scrollToFirst()
+                        if (folioPageFragment.mWebview != null)
+                            folioPageFragment.mWebview!!.dismissPopupWindow()
                     }
-                    observeAutoScrollingSetting()
+
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ${folioPageFragment == null}")
+
                 }
-            }, config.intervalAutoScroll * 1000L)
-        }
+
+            }
+            observeAutoScrollingSetting()
+        }, 5 * 1000L)
+
     }
 
     private fun setupSwipeObserver() {
