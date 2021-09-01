@@ -44,6 +44,7 @@ import org.springframework.util.ReflectionUtils
 import java.lang.Exception
 import java.lang.ref.WeakReference
 import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.sqrt
 
 /**
@@ -114,7 +115,7 @@ class FolioWebView : WebView {
     private var lastScrollType: LastScrollType? = null
 
     val contentHeightVal: Int
-        get() = Math.floor((this.contentHeight * this.scale).toDouble()).toInt()
+        get() = floor((this.contentHeight * this.scale).toDouble()).toInt()
 
     val webViewHeight: Int
         get() = this.measuredHeight

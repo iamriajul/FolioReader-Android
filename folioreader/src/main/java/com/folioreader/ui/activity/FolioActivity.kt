@@ -750,10 +750,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     override fun updatePages(currentPages: Int, totalPages: Int) {
         binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
-
-
-//        val chapterName = pubBox?.publication?.tableOfContents?.get(currentChapterIndex)?.title ?: return
-//        binding.pageInfo.tvChapterName.text = getString(R.string.chapter_name_format, chapterName)
     }
 
 
@@ -1499,6 +1495,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                     }
                     if (chapters[chapterCounter].href != href && childrenLink == null) {
                         chapterCounter++
+                        if (chapterCounter < chapters.size) {
+                            chapterName = chapters[chapterCounter].title
+                        }
                     }
 
                     binding.pageInfo.tvChapterName.text =
@@ -1762,7 +1761,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private val continuousAutoScrollHandler = Handler(Looper.getMainLooper())
     private fun continuousAutoScrollingSetting() {
         val config = AppUtil.getSavedConfig(this)
-        if(config.isContinuousAutoScroll){
+        if (config.isContinuousAutoScroll) {
             continuousAutoScrollHandler.postDelayed({
                 val position = binding.folioPageViewPager.currentItem
                 var folioPageFragment =
@@ -1771,17 +1770,31 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                     if (folioPageFragment.continuousScrolling()) {
                         Log.d(LOG_TAG, "observeAutoScrollingSetting: continuousScrolling")
                     } else {
-                        folioPageFragment =
-                            mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
-                        if (folioPageFragment != null) {
-                            currentChapterIndex = position + 1
-                            binding.folioPageViewPager.currentItem = currentChapterIndex
-                            folioPageFragment.scrollToFirst()
-                            if (folioPageFragment.mWebview != null)
-                                folioPageFragment.mWebview!!.dismissPopupWindow()
+                        if(folioPageFragment.scrollToNext()){
+
+                        } else {
+                            folioPageFragment =
+                                mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
+                            if (folioPageFragment != null) {
+                                currentChapterIndex = position + 1
+                                binding.folioPageViewPager.currentItem = currentChapterIndex
+                                folioPageFragment.scrollToFirst()
+                                if (folioPageFragment.mWebview != null)
+                                    folioPageFragment.mWebview!!.dismissPopupWindow()
+                            }
                         }
-                        Log.d(LOG_TAG, "observeAutoScrollingSetting: ${folioPageFragment == null}")
                     }
+                } else {
+                    folioPageFragment =
+                        mFolioPageFragmentAdapter!!.getItem(position + 1) as FolioPageFragment?
+                    if (folioPageFragment != null) {
+                        currentChapterIndex = position + 1
+                        binding.folioPageViewPager.currentItem = currentChapterIndex
+                        folioPageFragment.scrollToFirst()
+                        if (folioPageFragment.mWebview != null)
+                            folioPageFragment.mWebview!!.dismissPopupWindow()
+                    }
+                    Log.d(LOG_TAG, "observeAutoScrollingSetting: ${folioPageFragment == null}")
                 }
                 continuousAutoScrollingSetting()
             }, config.intervalContinuousAutoScroll * 1000L)

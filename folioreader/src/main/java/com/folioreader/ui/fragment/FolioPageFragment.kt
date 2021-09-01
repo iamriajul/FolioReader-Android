@@ -53,6 +53,7 @@ import org.readium.r2.shared.Link
 import org.readium.r2.shared.Locations
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.ceil
 
 /**
  * Created by mahavir on 4/2/16.
@@ -379,23 +380,21 @@ class FolioPageFragment : Fragment(),
     }
 
 
-
     fun continuousScrolling(): Boolean {
         val isPageLoading = loadingView == null || loadingView!!.visibility == View.VISIBLE
-        Log.v(LOG_TAG, "-> scrollToFirst -> isPageLoading = $isPageLoading")
-
         val canScrollVertically = mWebview?.canScrollVertically(1) ?: false
-        Log.d(LOG_TAG, "continuousScrolling: $canScrollVertically")
         if (!isPageLoading && canScrollVertically) {
-            val nextScroll = (mWebview?.webViewHeight ?: 0) - currentScrollY
-            if (nextScroll == 0) {
-                return false
-            } else if (nextScroll in 1 until scrollingIndex) {
-                mWebview?.scrollBy(0, nextScroll)
-            } else {
-                mWebview?.scrollBy(0, scrollingIndex)
+            return when (val nextScroll = (mWebview?.webViewHeight ?: 0) - currentScrollY) {
+                0 -> false
+                in 1 until scrollingIndex -> {
+                    mWebview?.scrollBy(0, nextScroll)
+                    true
+                }
+                else -> {
+                    mWebview?.scrollBy(0, scrollingIndex)
+                    true
+                }
             }
-            return true
         }
         return false
     }
@@ -432,11 +431,14 @@ class FolioPageFragment : Fragment(),
         mWebview!!.addJavascriptInterface(loadingView!!, "LoadingView")
         mWebview!!.addJavascriptInterface(mWebview!!, "FolioWebView")
 
+
+
         mWebview!!.setScrollListener(object : FolioWebView.ScrollListener {
             override fun onScrollChange(percent: Int) {
 
                 mScrollSeekbar!!.setProgressAndThumb(percent)
                 updatePagesLeftText(percent)
+                updatePageCount(percent)
             }
         })
         mWebview?.addBrightnessChangedListener { distance ->
@@ -472,6 +474,7 @@ class FolioPageFragment : Fragment(),
         mWebview!!.settings.defaultTextEncodingName = "utf-8"
         HtmlTask(this).execute(chapterUrl.toString())
     }
+
 
     private val webViewClient = object : WebViewClient() {
 
@@ -539,6 +542,7 @@ class FolioPageFragment : Fragment(),
 
             } else if (isCurrentFragment) {
 
+                updatePageCount(0)
                 val readLocator: ReadLocator?
                 if (savedInstanceState == null) {
                     Log.v(LOG_TAG, "-> onPageFinished -> took from getEntryReadLocator")
@@ -566,8 +570,11 @@ class FolioPageFragment : Fragment(),
                 } else {
                     // Make loading view invisible for all other fragments
                     loadingView!!.hide()
+                    updatePageCount(0)
                 }
             }
+
+
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -752,14 +759,28 @@ class FolioPageFragment : Fragment(),
         }
     }
 
-    private var currentScrollY = 0
+
+    private fun updatePageCount(scrollY: Int) {
+        val currentPage = (ceil(scrollY.toDouble() / mWebview!!.webViewHeight) + 1).toInt()
+        val totalPages =
+            ceil(mWebview!!.contentHeightVal.toDouble() / mWebview!!.webViewHeight).toInt()
+//        val totalPages = if(totalPageCount == 0){
+//            1
+//        } else {
+//            totalPageCount
+//        }
+        mActivityCallback?.updatePages(currentPage, totalPages)
+    }
+
+
+    private var currentScrollY = 1
     private fun updatePagesLeftText(scrollY: Int) {
         try {
             currentScrollY = scrollY
             val currentPage = (Math.ceil(scrollY.toDouble() / mWebview!!.webViewHeight) + 1).toInt()
             val totalPages =
                 Math.ceil(mWebview!!.contentHeightVal.toDouble() / mWebview!!.webViewHeight).toInt()
-            mActivityCallback?.updatePages(currentPage, totalPages);
+
             val pagesRemaining = totalPages - currentPage
             val pagesRemainingStrFormat = if (pagesRemaining > 1)
                 getString(R.string.pages_left)
