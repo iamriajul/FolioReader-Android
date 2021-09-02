@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/buttonMenuGroup"
+    android:layout_width="match_parent"
+    android:layout_height="28dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:orientation="horizontal"
+    android:weightSum="6"
+    app:singleSelection="true">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnChapters"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_chapters" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBookmark"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_bookmark" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFullScreen"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_full_screen" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRotate"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_rotate" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBrightness"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_brightness" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFontFamily"
+        style="@style/ToggleButtonWithIconOnly"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        app:icon="@drawable/ic_font" />
+
+</com.google.android.material.button.MaterialButtonToggleGroup>

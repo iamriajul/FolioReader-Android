@@ -64,6 +64,10 @@
     <string name="search_hint">Vyhľadávanie v knihe</string>
     <string name="search_empty_text">Žiadne výsledky.</string>
     <string name="search_failure_text">Niečo sa pokazilo.</string>
+    <string name="pages_format">Pages %1$d of %2$d</string>
+    <string name="chapter_name_format">(%1$s)</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="note">Note</string>
 
     <plurals name="numberOfSearchResults">
         <item quantity="one">%d výskyt</item>

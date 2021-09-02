@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity
                 .setOnClosedListener(this);
 
         getHighlightsAndSave();
-//        openRawFile();
+        openRawFile();
         findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,8 +90,9 @@ public class HomeActivity extends AppCompatActivity
             config = new Config();
         config.setAllowedDirection(Config.AllowedDirection.VERTICAL_AND_HORIZONTAL);
 
+
         folioReader.setConfig(config, true)
-                .openBook(R.raw.accessible_epub_3);
+                .openBook(R.raw.pagla_shaheber_kabor);
     }
 
     private ReadLocator getLastReadLocator() {

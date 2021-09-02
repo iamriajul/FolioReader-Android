@@ -53,18 +53,52 @@
                 android:layout_height="match_parent"
                 android:background="@color/blue_light_filter"
                 android:visibility="gone" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llPages"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="#1D660E"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+
+                <include
+                    android:id="@+id/pageInfo"
+                    layout="@layout/layout_page_info" />
+
+                <include
+                    android:id="@+id/brightness"
+                    layout="@layout/layout_brightness_and_themes" />
+
+                <include
+                    android:id="@+id/fontFamily"
+                    layout="@layout/layout_font_family" />
+
+
+                <include
+                    android:id="@+id/bottomMenus"
+                    layout="@layout/layout_bottom_menus" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/chapters_navigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
             android:layout_gravity="start">
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/ll_chapters"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="30dp"
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -72,6 +106,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
                     android:text="@string/chapter"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
@@ -84,6 +120,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
         </com.google.android.material.navigation.NavigationView>
 

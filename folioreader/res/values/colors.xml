@@ -19,6 +19,7 @@
     <color name="night_text_color">#767676</color>
     <color name="night_title_text_color">#848484</color>
     <color name="white">#FFFFFF</color>
+    <color name="brown">#FFE6BB</color>
     <color name="underline">#F02814</color>
     <color name="grey_color">#a8a8a8</color>
     <color name="webview_night">#131313</color>

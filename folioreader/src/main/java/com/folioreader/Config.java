@@ -55,6 +55,7 @@ public class Config extends BaseObservable implements Parcelable {
 
     private int font = 3;
     private int fontSize = 2;
+    private int currentBrightness = 4;
     private boolean nightMode;
     @ColorInt
     private int themeColor = DEFAULT_THEME_COLOR_INT;
@@ -62,9 +63,9 @@ public class Config extends BaseObservable implements Parcelable {
     private AllowedDirection allowedDirection = DEFAULT_ALLOWED_DIRECTION;
     private Direction direction = DEFAULT_DIRECTION;
     private boolean autoScroll = false;
-    private int intervalAutoScroll = 2*15;
+    private int intervalAutoScroll = 2 * 15;
     private boolean continuousAutoScroll = false;
-    private int intervalContinuousAutoScroll = 2*15;
+    private int intervalContinuousAutoScroll = 2 * 15;
     private boolean wholePageAtATime = false;
     private boolean useVolumeForControlNavigation = false;
     private boolean swipeForControlBrightness = false;
@@ -232,6 +233,17 @@ public class Config extends BaseObservable implements Parcelable {
         notifyPropertyChanged(BR.fontSize);
         return this;
     }
+
+    @Bindable
+    public int getCurrentBrightness() {
+        return currentBrightness;
+    }
+
+    public Config setCurrentBrightness(int currentBrightness) {
+        this.currentBrightness = currentBrightness;
+        return this;
+    }
+
 
     @Bindable
     public boolean isNightMode() {

@@ -11,6 +11,8 @@ public interface FolioActivityCallback {
 
     int getCurrentChapterIndex();
 
+    void updatePages(int currentPages, int totalPages);
+
     ReadLocator getEntryReadLocator();
 
     boolean goToChapter(String href);

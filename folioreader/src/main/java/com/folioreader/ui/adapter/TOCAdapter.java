@@ -30,6 +30,7 @@ public class TOCAdapter extends MultiLevelExpIndListAdapter {
     private String selectedHref;
     private Config mConfig;
 
+
     public TOCAdapter(Context context, ArrayList<TOCLinkWrapper> tocLinkWrappers, String selectedHref, Config config) {
         super(tocLinkWrappers);
         mContext = context;
@@ -116,6 +117,7 @@ public class TOCAdapter extends MultiLevelExpIndListAdapter {
             viewHolder.sectionTitle.setTextColor(mConfig.getThemeColor());
         }
     }
+
 
     public interface TOCCallback {
         void onTocClicked(int position);
