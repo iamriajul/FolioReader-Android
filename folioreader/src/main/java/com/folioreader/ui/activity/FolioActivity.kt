@@ -36,7 +36,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.Uri
-import androidx.core.view.drawToBitmap
 import android.os.*
 import android.provider.Settings
 import android.text.TextUtils
@@ -109,11 +108,9 @@ import kotlin.math.log
 import android.content.pm.ActivityInfo
 
 
-
 open class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
-    View.OnSystemUiVisibilityChangeListener, SensorEventListener, ScreenShortUtil.OnResultListener {
-class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
-    View.OnSystemUiVisibilityChangeListener, TOCCallback {
+    View.OnSystemUiVisibilityChangeListener, SensorEventListener, ScreenShortUtil.OnResultListener,
+    TOCCallback {
 
     private var bookFileName: String? = null
 
@@ -174,7 +171,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         const val INTENT_EPUB_SOURCE_PATH = "com.folioreader.epub_asset_path"
         const val INTENT_EPUB_SOURCE_TYPE = "epub_source_type"
         const val EXTRA_READ_LOCATOR = "com.folioreader.extra.READ_LOCATOR"
-        private const val BUNDLE_READ_LOCATOR_CONFIG_CHANGE = "BUNDLE_READ_LOCATOR_CONFIG_CHANGE"
+        private const val BUNDLE_READ_LOCATOR_CONFIG_CHANGE =
+            "BUNDLE_READ_LOCATOR_CONFIG_CHANGE"
         private const val BUNDLE_DISTRACTION_FREE_MODE = "BUNDLE_DISTRACTION_FREE_MODE"
         const val EXTRA_SEARCH_ITEM = "EXTRA_SEARCH_ITEM"
         const val ACTION_SEARCH_CLEAR = "ACTION_SEARCH_CLEAR"
@@ -534,7 +532,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             window?.navigationBarColor = value
         }
 
-        navigationColorAnim.duration = ConfigBottomSheetDialogFragment.FADE_DAY_NIGHT_MODE.toLong()
+        navigationColorAnim.duration =
+            ConfigBottomSheetDialogFragment.FADE_DAY_NIGHT_MODE.toLong()
         navigationColorAnim.start()
 
         colorAnimation.start()
@@ -774,7 +773,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         binding.toolbar.background = ColorDrawable(ContextCompat.getColor(this, R.color.white))
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
 
-        binding.llChapters.background = ColorDrawable(ContextCompat.getColor(this, R.color.white))
+        binding.llChapters.background =
+            ColorDrawable(ContextCompat.getColor(this, R.color.white))
         binding.chapterTitleTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
@@ -787,12 +787,14 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             )
         )
 
-        binding.llChapters.background = ColorDrawable(ContextCompat.getColor(this, R.color.black))
+        binding.llChapters.background =
+            ColorDrawable(ContextCompat.getColor(this, R.color.black))
         binding.chapterTitleTextView.setTextColor(ContextCompat.getColor(this, R.color.white))
     }
 
     override fun updatePages(currentPages: Int, totalPages: Int) {
-        binding.pageInfo.tvPages.text = getString(R.string.pages_format, currentPages, totalPages)
+        binding.pageInfo.tvPages.text =
+            getString(R.string.pages_format, currentPages, totalPages)
     }
 
 
@@ -801,7 +803,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     }
 
     private fun initMediaController() {
-        mediaControllerFragment = MediaControllerFragment.getInstance(supportFragmentManager, this)
+        mediaControllerFragment =
+            MediaControllerFragment.getInstance(supportFragmentManager, this)
     }
 
     private fun initSettingUI() {
@@ -1079,7 +1082,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private fun initBook() {
         Log.v(LOG_TAG, "-> initBook")
 
-        bookFileName = FileUtil.getEpubFilename(this, mEpubSourceType!!, mEpubFilePath, mEpubRawId)
+        bookFileName =
+            FileUtil.getEpubFilename(this, mEpubSourceType!!, mEpubFilePath, mEpubRawId)
         val path = FileUtil.saveEpubFileAndLoadLazyBook(
             this, mEpubSourceType, mEpubFilePath,
             mEpubRawId, bookFileName
@@ -1178,7 +1182,14 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         if (streamerUri == null) {
             streamerUri =
-                Uri.parse(String.format(STREAMER_URL_TEMPLATE, LOCALHOST, portNumber, bookFileName))
+                Uri.parse(
+                    String.format(
+                        STREAMER_URL_TEMPLATE,
+                        LOCALHOST,
+                        portNumber,
+                        bookFileName
+                    )
+                )
         }
         return streamerUri.toString()
     }
@@ -1296,7 +1307,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         } else {
             viewportRect.right = displayMetrics!!.widthPixels - viewportRect.right
         }
-        viewportRect.bottom = displayMetrics!!.heightPixels - getBottomDistraction(DisplayUnit.PX)
+        viewportRect.bottom =
+            displayMetrics!!.heightPixels - getBottomDistraction(DisplayUnit.PX)
 
         return viewportRect
     }
@@ -1318,8 +1330,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             DisplayUnit.CSS_PX -> {
                 viewportRect.left = Math.ceil((viewportRect.left / density).toDouble()).toInt()
                 viewportRect.top = Math.ceil((viewportRect.top / density).toDouble()).toInt()
-                viewportRect.right = Math.ceil((viewportRect.right / density).toDouble()).toInt()
-                viewportRect.bottom = Math.ceil((viewportRect.bottom / density).toDouble()).toInt()
+                viewportRect.right =
+                    Math.ceil((viewportRect.right / density).toDouble()).toInt()
+                viewportRect.bottom =
+                    Math.ceil((viewportRect.bottom / density).toDouble()).toInt()
                 return viewportRect
             }
 
@@ -1334,16 +1348,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun onSystemUiVisibilityChange(visibility: Int) {
         Log.v(LOG_TAG, "-> onSystemUiVisibilityChange -> visibility = $visibility")
 
-        distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
-        Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
-
-        if (supportActionBar != null) {
-            if (distractionFreeMode) {
-                supportActionBar!!.hide()
-            } else {
-                supportActionBar!!.show()
-            }
-        }
+//        distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
+//        Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
+//
+//        if (supportActionBar != null) {
+//            if (distractionFreeMode) {
+//                supportActionBar!!.hide()
+//            } else {
+//                supportActionBar!!.show()
+//            }
+//        }
 //        distractionFreeMode = visibility != View.SYSTEM_UI_FLAG_VISIBLE
 //        Log.v(LOG_TAG, "-> distractionFreeMode = $distractionFreeMode")
 //
@@ -1522,7 +1536,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
             override fun onPageSelected(position: Int) {
                 Log.d(LOG_TAG, "-> onPageSelected -> position = $position")
-                Log.d(LOG_TAG, "-> onPageSelected -> href = ${spine!![currentChapterIndex].href}")
+                Log.d(
+                    LOG_TAG,
+                    "-> onPageSelected -> href = ${spine!![currentChapterIndex].href}"
+                )
 
                 EventBus.getDefault().post(
                     MediaOverlayPlayPauseEvent(
@@ -1606,7 +1623,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 readLocator = intent.getParcelableExtra(FolioActivity.EXTRA_READ_LOCATOR)
                 entryReadLocator = readLocator
             } else {
-                readLocator = savedInstanceState!!.getParcelable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE)
+                readLocator =
+                    savedInstanceState!!.getParcelable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE)
                 lastReadLocator = readLocator
             }
             currentChapterIndex = getChapterIndex(readLocator)
@@ -1825,7 +1843,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                     if (folioPageFragment.continuousScrolling()) {
                         Log.d(LOG_TAG, "observeAutoScrollingSetting: continuousScrolling")
                     } else {
-                        if(folioPageFragment.scrollToNext()){
+                        if (folioPageFragment.scrollToNext()) {
 
                         } else {
                             folioPageFragment =
