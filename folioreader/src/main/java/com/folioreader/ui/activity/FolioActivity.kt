@@ -1278,8 +1278,6 @@ open class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaCont
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             useVolumeControlForNavigation(true)
             return true
-        } else if (keyCode == KeyEvent.META_SYM_ON) {
-            return false
         }
         return super.onKeyDown(keyCode, event)
     }
